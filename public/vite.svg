@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img"
+  aria-labelledby="phoebeIconTitle phoebeIconDesc">
+  <title id="phoebeIconTitle">菲比 徽章</title>
+  <desc id="phoebeIconDesc">圆形蓝底金环与简洁法杖，菲比风格网站图标（适用于favicon）。</desc>
+
+  <!-- 背景圆 -->
+  <circle cx="32" cy="32" r="30" fill="#3b7be0" />
+
+  <g fill="none" stroke="none" stroke-width="0">
+    <circle cx="32" cy="22" r="10" fill="#f6de97" opacity="0.12" />
+    <path d="M32 6 L36 18 L48 22 L36 26 L32 38 L28 26 L16 22 L28 18 Z" fill="#f6de97" />
+    <rect x="30" y="38" width="4" height="18" rx="2" fill="#f6de97" />
+  </g>
+
+  <!-- 小星光（右上角点缀，提升菲比的“光”感） -->
+  <g transform="translate(46,10)">
+    <path d="M0 -2 L0.9 -0.2 L2.8 0 L0.9 0.2 L0 -2 Z" fill="#ffd966" opacity="0.98" />
+    <circle cx="6" cy="-1" r="1.1" fill="#fff6d9" opacity="0.9" />
+  </g>
+</svg>
