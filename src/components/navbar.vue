@@ -1,40 +1,61 @@
 <template>
-  <nav ref="navbarRef" class="navbar theme-red" :class="{ 'is-scrolled': isScrolled }" role="navigation"
-    aria-label="主导航">
-
-
+  <nav
+    ref="navbarRef"
+    class="navbar theme-red"
+    :class="{ 'is-scrolled': isScrolled }"
+    role="navigation"
+    aria-label="主导航"
+  >
     <div class="navbar__container">
-      <div class="navbar__logo"    >
+      <div class="navbar__logo">
         <!-- 在你的模板里替换 logo 部分 -->
         <span class="logo-icon" aria-hidden="true">
           <!-- 这是一个简洁的“圣徽/法杖”风格徽章 SVG，风格优雅，适合菲比 -->
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <svg
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            focusable="false"
+          >
             <g fill="none" stroke="none" stroke-width="0">
               <circle cx="32" cy="22" r="10" fill="#f6de97" opacity="0.12" />
-              <path d="M32 6 L36 18 L48 22 L36 26 L32 38 L28 26 L16 22 L28 18 Z" fill="#f6de97" />
+              <path
+                d="M32 6 L36 18 L48 22 L36 26 L32 38 L28 26 L16 22 L28 18 Z"
+                fill="#f6de97"
+              />
               <rect x="30" y="38" width="4" height="18" rx="2" fill="#f6de97" />
             </g>
           </svg>
         </span>
 
         <span class="brand-text">菲比设定集</span>
-
       </div>
 
       <div class="online-count" v-if="onlineCount !== null" aria-live="polite">
         在线：<span class="count">{{ onlineCount }} 人</span>
       </div>
 
-      <button class="navbar__toggle" :class="{ active: open }" @click="toggleMenu" aria-label="切换菜单"
-        :aria-expanded="String(open)">
+      <button
+        class="navbar__toggle"
+        :class="{ active: open }"
+        @click="toggleMenu"
+      >
         <span class="line line--1"></span>
         <span class="line line--2"></span>
         <span class="line line--3"></span>
       </button>
 
-      <ul class="navbar__links" :class="{ 'is-open': open }" id="primary-navigation">
+      <ul
+        class="navbar__links"
+        :class="{ 'is-open': open }"
+        id="primary-navigation"
+      >
         <li v-for="item in links" :key="item.name" @click="onLinkClick">
-          <router-link :to="item.path" class="link" active-class="router-link-active">
+          <router-link
+            :to="item.path"
+            class="link"
+            active-class="router-link-active"
+          >
             <span class="link-inner">
               <span class="link-text">{{ item.name }}</span>
               <span class="link-glow" aria-hidden="true"></span>
@@ -43,7 +64,12 @@
         </li>
 
         <li>
-          <a href="http://slty.site/#/redirector" target="_blank" rel="noopener" class="link">
+          <a
+            href="http://slty.site/#/redirector"
+            target="_blank"
+            rel="noopener"
+            class="link"
+          >
             <span class="link-inner">
               <span class="link-text">总站</span>
               <span class="link-glow" aria-hidden="true"></span>
@@ -73,21 +99,25 @@ const links = [
   { name: "寄予她", path: "/message" },
   { name: "流光画廊", path: "/gallery" },
   { name: "典藏秘库", path: "/resources" },
-  // { name: "小游戏", path: "/game" },
+  { name: "小游戏", path: "/game" },
   // { name: "语音馆", path: "/voice" },
 ];
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 20;
 };
-const toggleMenu = () => { open.value = !open.value; };
-const onLinkClick = () => { open.value = false; };
-
-
+const toggleMenu = () => {
+  open.value = !open.value;
+};
+const onLinkClick = () => {
+  open.value = false;
+};
 
 onMounted(() => {
   window.addEventListener("scroll", handleScroll, { passive: true });
-  socket.on("onlineCount", (count: number) => { onlineCount.value = count; });
+  socket.on("onlineCount", (count: number) => {
+    onlineCount.value = count;
+  });
 });
 onBeforeUnmount(() => {
   socket.disconnect();
@@ -99,7 +129,6 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 /* 完全写死颜色 — 红椿风格（不使用变量） */
-
 
 // 主色调（参考菲比原画：蓝白服饰 + 金发 + 紫色眼眸）
 $bg-start: rgba(250, 252, 255, 0.78); // 珍珠白的弱透明，用于背景叠层
@@ -119,7 +148,13 @@ $eye-lilac: #b97fe0; // 紫罗兰高光
   height: 72px;
   padding: 12px 0;
   display: block;
-  background: linear-gradient(180deg, $bg-start 0%, rgba(255, 255, 255, 0.06) 12%, transparent 22%), linear-gradient(180deg, rgba(8, 16, 32, 0.72), $bg-end 90%);
+  background: linear-gradient(
+      180deg,
+      $bg-start 0%,
+      rgba(255, 255, 255, 0.06) 12%,
+      transparent 22%
+    ),
+    linear-gradient(180deg, rgba(8, 16, 32, 0.72), $bg-end 90%);
   backdrop-filter: blur(10px) saturate(1.05);
   -webkit-backdrop-filter: blur(10px);
   transition: height 0.28s ease, box-shadow 0.28s ease, padding 0.28s ease;
@@ -129,7 +164,6 @@ $eye-lilac: #b97fe0; // 紫罗兰高光
   height: 60px;
   box-shadow: 0 8px 30px rgba(2, 4, 8, 0.7);
 }
-
 
 /* 容器 */
 .navbar__container {
@@ -150,7 +184,6 @@ $eye-lilac: #b97fe0; // 紫罗兰高光
   display: flex;
   align-items: center;
   gap: 10px;
-
 }
 
 .navbar__logo .logo-icon {
@@ -167,14 +200,13 @@ $eye-lilac: #b97fe0; // 紫罗兰高光
     display: block;
     // svg 内的形状会继承这个 fill（方便主题化）
     fill: $hair;
-    transition: transform .28s ease, filter .28s ease;
+    transition: transform 0.28s ease, filter 0.28s ease;
     filter: drop-shadow(0 6px 18px rgba(233, 195, 106, 0.12));
     animation: badgeGlow 3.6s ease-in-out infinite;
   }
 }
 
 @keyframes badgeGlow {
-
   0%,
   100% {
     transform: translateY(0);
@@ -200,8 +232,6 @@ $eye-lilac: #b97fe0; // 紫罗兰高光
   -webkit-text-fill-color: transparent;
   text-shadow: 0 6px 18px rgba(59, 123, 224, 0.06);
 }
-
-
 
 .navbar__logo:hover .logo-icon {
   transform: translateY(-3px) rotate(-6deg);
@@ -242,14 +272,24 @@ $eye-lilac: #b97fe0; // 紫罗兰高光
   width: 22px;
   margin: 4px 0;
   border-radius: 2px;
-  background: linear-gradient(90deg, rgba($accent-blue, 0.95) 0%, $gold 60%, rgba($eye-lilac, 0.95) 100%);
-  box-shadow: 0 6px 18px rgba(217, 58, 58, 0.12), 0 0 10px rgba(217, 58, 58, 0.06);
-  transition: transform 0.28s cubic-bezier(.2, .8, .2, 1), opacity 0.2s;
+  background: linear-gradient(
+    90deg,
+    rgba($accent-blue, 0.95) 0%,
+    $gold 60%,
+    rgba($eye-lilac, 0.95) 100%
+  );
+  box-shadow: 0 6px 18px rgba(217, 58, 58, 0.12),
+    0 0 10px rgba(217, 58, 58, 0.06);
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s;
   transform-origin: center;
 }
 
 .navbar__toggle.active {
-  background: linear-gradient(180deg, rgba(122, 57, 255, 0.06), rgba(255, 102, 196, 0.04));
+  background: linear-gradient(
+    180deg,
+    rgba(122, 57, 255, 0.06),
+    rgba(255, 102, 196, 0.04)
+  );
 }
 
 .navbar__toggle.active .line--1 {
@@ -328,7 +368,7 @@ $eye-lilac: #b97fe0; // 紫罗兰高光
 .navbar__links li .link.router-link-active,
 .navbar__links li .link.active {
   color: $accent-blue;
-  text-shadow: 0 6px 28px rgba(59, 123, 224, 0.10);
+  text-shadow: 0 6px 28px rgba(59, 123, 224, 0.1);
 }
 
 .navbar__links li .link.router-link-active .link-glow,
@@ -355,7 +395,11 @@ $eye-lilac: #b97fe0; // 紫罗兰高光
     left: 10px;
     right: 10px;
     margin: 0 auto;
-    background: linear-gradient(180deg, rgba(12, 6, 8, 0.78), rgba(8, 4, 6, 0.9));
+    background: linear-gradient(
+      180deg,
+      rgba(12, 6, 8, 0.78),
+      rgba(8, 4, 6, 0.9)
+    );
     border-radius: 14px;
     padding: 12px;
     flex-direction: column;
@@ -364,7 +408,7 @@ $eye-lilac: #b97fe0; // 紫罗兰高光
     max-height: 0;
     overflow: hidden;
     transform-origin: top center;
-    transition: max-height 0.36s cubic-bezier(.2, .8, .2, 1), opacity 0.28s;
+    transition: max-height 0.36s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.28s;
     opacity: 0;
     pointer-events: none;
     box-shadow: 0 12px 40px rgba(7, 4, 20, 0.6);
@@ -380,7 +424,11 @@ $eye-lilac: #b97fe0; // 紫罗兰高光
     display: flex;
     justify-content: center;
     padding: 12px;
-    background: linear-gradient(180deg, rgba(74, 16, 16, 0.04), rgba(217, 58, 58, 0.02));
+    background: linear-gradient(
+      180deg,
+      rgba(74, 16, 16, 0.04),
+      rgba(217, 58, 58, 0.02)
+    );
     border-radius: 10px;
   }
 }

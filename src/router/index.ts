@@ -30,7 +30,7 @@ const router = createRouter({
       path: "/game",
       component: () => import("@/views/gameView/index.vue"),
     },
-     {
+    {
       path: "/voice",
       component: () => import("@/views/voiceView/index.vue"),
     },
