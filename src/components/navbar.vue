@@ -1,456 +1,1686 @@
 <template>
-  <nav ref="navbarRef" class="navbar theme-red" :class="{ 'is-scrolled': isScrolled }" role="navigation"
-    aria-label="主导航">
-    <div class="navbar__container">
-      <div class="navbar__logo">
-        <!-- 在你的模板里替换 logo 部分 -->
-        <span class="logo-icon" aria-hidden="true">
-          <!-- 这是一个简洁的“圣徽/法杖”风格徽章 SVG，风格优雅，适合菲比 -->
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-            <g fill="none" stroke="none" stroke-width="0">
-              <circle cx="32" cy="22" r="10" fill="#f6de97" opacity="0.12" />
-              <path d="M32 6 L36 18 L48 22 L36 26 L32 38 L28 26 L16 22 L28 18 Z" fill="#f6de97" />
-              <rect x="30" y="38" width="4" height="18" rx="2" fill="#f6de97" />
-            </g>
-          </svg>
-        </span>
+  <nav
+    ref="navbarRef"
+    class="phoebe-navbar-v2"
+    :class="{ 'is-scrolled': isScrolled, 'menu-open': isMenuOpen }"
+    role="navigation"
+    aria-label="菲比设定集主导航"
+  >
+    <!-- 神圣光影背景特效 -->
+    <div class="nav-bg-effects" aria-hidden="true">
+      <div class="halo-orbital"></div>
+      <div class="light-streams"></div>
+      <div class="particle-field"></div>
+      <div class="diffraction-glow"></div>
+    </div>
 
-        <span class="brand-text">菲比设定集</span>
+    <div class="nav-container">
+      <!-- Logo区域 - 神圣法杖徽记 -->
+      <router-link to="/" class="nav-logo" aria-label="返回首页">
+        <div class="logo-orb">
+          <div class="orb-core"></div>
+          <div class="orb-ring ring-1"></div>
+          <div class="orb-ring ring-2"></div>
+          <div class="orb-ring ring-3"></div>
+          <div class="staff-symbol">
+            <svg
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 3L14 8L20 10L14 12L12 17L10 12L4 10L10 8Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+                stroke-linejoin="round"
+              />
+              <line
+                x1="12"
+                y1="12"
+                x2="12"
+                y2="20"
+                stroke="currentColor"
+                stroke-width="1.2"
+                stroke-linecap="round"
+              />
+              <circle cx="12" cy="10" r="1.5" fill="currentColor" />
+            </svg>
+          </div>
+          <div class="orb-glow"></div>
+        </div>
+        <div class="logo-text">
+          <span class="brand-main">菲比圣域</span>
+          <span class="brand-sub">Phoebe's Sanctuary</span>
+        </div>
+        <span
+          class="logo-sparkle"
+          v-for="i in 3"
+          :key="`sparkle-${i}`"
+          :style="getSparkleStyle(i)"
+        ></span>
+      </router-link>
+
+      <!-- 在线状态指示器 -->
+      <div
+        class="online-indicator"
+        v-if="onlineCount !== null"
+        aria-live="polite"
+      >
+        <div class="pulse-dot"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring ring-delay"></div>
+        <span class="count-text"
+          >圣光伴行：<em>{{ onlineCount }}</em></span
+        >
       </div>
 
-      <div class="online-count" v-if="onlineCount !== null" aria-live="polite">
-        在线：<span class="count">{{ onlineCount }} 人</span>
+      <!-- 主要导航区域 -->
+      <div class="nav-main-area">
+        <!-- 主要导航链接 -->
+        <ul class="nav-primary-links">
+          <li v-for="item in primaryLinks" :key="item.name">
+            <router-link
+              :to="item.path"
+              class="nav-primary-link"
+              active-class="is-active"
+              @click="closeMobileMenu"
+            >
+              <span class="link-decor decor-left"></span>
+              <span class="link-text">{{ item.name }}</span>
+              <span class="link-decor decor-right"></span>
+              <span class="link-aura"></span>
+            </router-link>
+          </li>
+
+          <!-- 更多下拉菜单 (仅PC端显示) -->
+          <li
+            class="more-dropdown-wrapper"
+            v-if="!isMobile"
+            @mouseenter="showDropdown = true"
+            @mouseleave="showDropdown = false"
+          >
+            <button
+              class="more-dropdown-trigger"
+              :class="{ 'dropdown-open': showDropdown }"
+              @click="toggleDropdown"
+              aria-haspopup="true"
+            >
+              <span class="trigger-text">更多</span>
+              <span class="trigger-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M7 10l5 5 5-5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </span>
+              <span class="trigger-glow"></span>
+            </button>
+
+            <!-- 下拉菜单内容 -->
+            <transition name="dropdown">
+              <div class="more-dropdown-menu" v-show="showDropdown" @click.stop>
+                <div class="dropdown-header">
+                  <span class="header-icon">✦</span>
+                  <span class="header-text">圣域功能</span>
+                </div>
+                <ul class="dropdown-links">
+                  <li v-for="item in dropdownLinks" :key="item.name">
+                    <router-link
+                      :to="item.path"
+                      class="dropdown-link"
+                      active-class="is-active"
+                      @click="closeDropdown"
+                    >
+                      <span class="dropdown-link-text">{{ item.name }}</span>
+
+                      <span class="dropdown-link-glow"></span>
+                    </router-link>
+                  </li>
+                  <!-- 总站链接 -->
+                  <li class="dropdown-external">
+                    <a
+                      href="http://slty.site/#/redirector"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="dropdown-link external"
+                      @click="closeDropdown"
+                    >
+                      <span class="dropdown-link-text">前往总站</span>
+                      <span class="external-icon">↗</span>
+                      <span class="dropdown-link-glow"></span>
+                    </a>
+                  </li>
+                </ul>
+                <div class="dropdown-footer">
+                  <span class="footer-text"
+                    >共 {{ dropdownLinks.length }} 项功能</span
+                  >
+                </div>
+              </div>
+            </transition>
+          </li>
+
+          <!-- 移动端总站链接 -->
+          <li class="mobile-external" v-if="isMobile">
+            <a
+              href="http://slty.site/#/redirector"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="nav-primary-link external"
+              @click="closeMobileMenu"
+            >
+              <span class="link-text">前往总站</span>
+              <span class="external-marker">↗</span>
+            </a>
+          </li>
+        </ul>
       </div>
 
-      <button class="navbar__toggle" :class="{ active: open }" @click="toggleMenu">
-        <span class="line line--1"></span>
-        <span class="line line--2"></span>
-        <span class="line line--3"></span>
+      <!-- 移动端菜单切换按钮 -->
+      <button
+        class="menu-toggle-v2"
+        :class="{ active: isMenuOpen }"
+        @click="toggleMobileMenu"
+        :aria-expanded="isMenuOpen"
+        aria-label="切换导航菜单"
+      >
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <div class="toggle-orb"></div>
+        <div class="toggle-halo"></div>
       </button>
 
-      <ul class="navbar__links" :class="{ 'is-open': open }" id="primary-navigation">
-        <li v-for="item in links" :key="item.name" @click="onLinkClick">
-          <router-link :to="item.path" class="link" active-class="router-link-active">
-            <span class="link-inner">
-              <span class="link-text">{{ item.name }}</span>
-              <span class="link-glow" aria-hidden="true"></span>
-            </span>
-          </router-link>
-        </li>
+      <!-- 移动端菜单面板 -->
+      <transition name="mobile-panel">
+        <div
+          class="mobile-menu-panel"
+          v-show="isMenuOpen"
+          @click.self="closeMobileMenu"
+        >
+          <div class="panel-content" :class="{ 'panel-open': isMenuOpen }">
+            <div class="panel-header">
+              <div class="panel-logo">
+                <div class="panel-logo-orb">
+                  <div class="orb-core-small"></div>
+                </div>
+                <span class="panel-title">菲比圣域</span>
+              </div>
+              <button
+                class="panel-close"
+                @click="closeMobileMenu"
+                aria-label="关闭菜单"
+              >
+                <span class="close-icon">×</span>
+              </button>
+            </div>
 
-        <li>
-          <a href="http://slty.site/#/redirector" target="_blank" rel="noopener" class="link">
-            <span class="link-inner">
-              <span class="link-text">总站</span>
-              <span class="link-glow" aria-hidden="true"></span>
-            </span>
-          </a>
-        </li>
-      </ul>
+            <div class="panel-online" v-if="onlineCount !== null">
+              <div class="panel-pulse"></div>
+              <span class="panel-count"
+                >当前 {{ onlineCount }} 位访客正在圣域中</span
+              >
+            </div>
+
+            <div class="panel-links">
+              <div class="panel-section">
+                <h3 class="section-title">主要功能</h3>
+                <div class="section-links">
+                  <router-link
+                    v-for="item in primaryLinks"
+                    :key="item.name"
+                    :to="item.path"
+                    class="panel-link"
+                    active-class="is-active"
+                    @click="closeMobileMenu"
+                  >
+                    <span class="panel-link-text">{{ item.name }}</span>
+                    <span class="panel-link-arrow">›</span>
+                  </router-link>
+                </div>
+              </div>
+
+              <div class="panel-section">
+                <h3 class="section-title">其他功能</h3>
+                <div class="section-links">
+                  <router-link
+                    v-for="item in dropdownLinks"
+                    :key="item.name"
+                    :to="item.path"
+                    class="panel-link"
+                    active-class="is-active"
+                    @click="closeMobileMenu"
+                  >
+                    <span class="panel-link-text">{{ item.name }}</span>
+                  </router-link>
+                  <a
+                    href="http://slty.site/#/redirector"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="panel-link external"
+                    @click="closeMobileMenu"
+                  >
+                    <span class="panel-link-text">前往总站</span>
+                    <span class="external-badge">外部</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-footer">
+              <div class="footer-glow"></div>
+              <p class="footer-text">愿圣光指引你的道路</p>
+            </div>
+          </div>
+        </div>
+      </transition>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, onUnmounted } from "vue";
-import { io } from "socket.io-client";
+import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
+import { io, Socket } from "socket.io-client";
 
-const siteId = "feibi";
+// ==================== 状态与数据 ====================
 const onlineCount = ref<number | null>(null);
-const socket = io("http://36.150.237.25:3000", { query: { siteId } });
-
-const open = ref(false);
+const isMenuOpen = ref(false);
 const isScrolled = ref(false);
-const navbarRef = ref<HTMLElement | null>(null);
+const showDropdown = ref(false);
+const isMobile = ref(false);
 
-const links = [
-  { name: "首页", path: "/" },
-  { name: "圣徽之庭", path: "/timeLine" },
-  { name: "寄予她", path: "/message" },
-  { name: "流光画廊", path: "/gallery" },
-  { name: "典藏秘库", path: "/resources" },
-  { name: "每日祈福", path: "/game" },
-  { name: "语音馆", path: "/voice" },
+// Socket.IO 连接
+const socket: Socket = io("http://36.150.237.25:3000", {
+  query: { siteId: "feibi" },
+});
+
+const primaryLinks = [
+  { name: "圣域初光", path: "/" },
+  { name: "光影记事", path: "/timeLine" },
+  { name: "镜影绘卷", path: "/gallery" },
+  { name: "回音庭", path: "/talk" },
+  { name: "祈愿之壁", path: "/message" },
+  { name: "晨光祈愿", path: "/game" },
 ];
 
-const handleScroll = () => {
-  isScrolled.value = window.scrollY > 20;
-};
-const toggleMenu = () => {
-  open.value = !open.value;
-};
-const onLinkClick = () => {
-  open.value = false;
+// 下拉菜单链接 (PC端隐藏的链接)
+const dropdownLinks = [
+  { name: "圣光馈赠", path: "/resources" },
+  { name: "隐海文阁", path: "/wiki" },
+  { name: "圣音回廊", path: "/voice" },
+  { name: "光噪旋律", path: "/music" },
+];
+
+// ==================== 方法 ====================
+const toggleMobileMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+  // 防止背景滚动
+  if (isMenuOpen.value) {
+    document.body.style.overflow = "hidden";
+    // 关闭下拉菜单
+    showDropdown.value = false;
+  } else {
+    document.body.style.overflow = "";
+  }
 };
 
+const closeMobileMenu = () => {
+  isMenuOpen.value = false;
+  document.body.style.overflow = "";
+};
+
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+};
+
+const closeDropdown = () => {
+  showDropdown.value = false;
+};
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 30;
+};
+
+const handleResize = () => {
+  isMobile.value = window.innerWidth <= 992;
+  // 如果切换到移动端，关闭下拉菜单
+  if (isMobile.value) {
+    showDropdown.value = false;
+  }
+};
+
+// 为动态元素生成样式
+const getSparkleStyle = (index: number) => {
+  const delay = index * 0.3;
+  const duration = 2 + index * 0.5;
+  return {
+    "--sparkle-delay": `${delay}s`,
+    "--sparkle-duration": `${duration}s`,
+    "--sparkle-offset": `${index * 120}deg`,
+  } as any;
+};
+
+// ==================== 计算属性 ====================
+// 检查是否应该显示更多下拉菜单
+const shouldShowMoreDropdown = computed(() => {
+  return !isMobile.value && dropdownLinks.length > 0;
+});
+
+// ==================== 生命周期 ====================
 onMounted(() => {
   window.addEventListener("scroll", handleScroll, { passive: true });
+  window.addEventListener("resize", handleResize);
+  handleResize(); // 初始化
+
   socket.on("onlineCount", (count: number) => {
     onlineCount.value = count;
   });
+
+  // 点击外部关闭下拉菜单
+  document.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest(".more-dropdown-wrapper")) {
+      showDropdown.value = false;
+    }
+  });
 });
+
 onBeforeUnmount(() => {
   socket.disconnect();
-});
-onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll);
+  window.removeEventListener("resize", handleResize);
+  document.body.style.overflow = "";
+});
+
+// 监听移动端状态变化
+watch(isMobile, (newValue) => {
+  if (newValue) {
+    showDropdown.value = false;
+  }
 });
 </script>
 
 <style lang="scss" scoped>
-/* 完全写死颜色 — 红椿风格（不使用变量） */
+/* ==================== 菲比主题变量 ==================== */
+$phoebe-gold: #f6de97;
+$phoebe-gold-light: #fff9e6;
+$phoebe-blue-dark: #0c1e3a;
+$phoebe-blue-deep: #07122b;
+$phoebe-blue-light: #3b7be0;
+$phoebe-blue-bright: #6aa7ff;
+$phoebe-lilac: #b97fe0;
+$phoebe-lilac-light: #e6d4f5;
+$phoebe-white: #fafcfd;
+$phoebe-white-trans: rgba(250, 252, 253, 0.95);
 
-// 主色调（参考菲比原画：蓝白服饰 + 金发 + 紫色眼眸）
-$bg-start: rgba(250, 252, 255, 0.78); // 珍珠白的弱透明，用于背景叠层
-$bg-end: rgba(12, 30, 58, 0.9); // 深海蓝（底色）
-$accent-blue: #3b7be0; // 菲比蓝（披风 / 装饰）
-$accent-blue-2: #6aa7ff; // 浅蓝高光
-$gold: #e9c36a; // 金色装饰
-$hair: #f6de97; // 金发暖色
-$eye-lilac: #b97fe0; // 紫罗兰高光
-
-.navbar {
+/* ==================== 导航栏基础样式 ==================== */
+.phoebe-navbar-v2 {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1200;
-  height: 72px;
-  padding: 12px 0;
-  display: block;
-  background: linear-gradient(180deg,
-      $bg-start 0%,
-      rgba(255, 255, 255, 0.06) 12%,
-      transparent 22%),
-    linear-gradient(180deg, rgba(8, 16, 32, 0.72), $bg-end 90%);
-  backdrop-filter: blur(10px) saturate(1.05);
-  -webkit-backdrop-filter: blur(10px);
-  transition: height 0.28s ease, box-shadow 0.28s ease, padding 0.28s ease;
+  z-index: 2000;
+  height: 80px;
+  background: linear-gradient(
+    135deg,
+    rgba($phoebe-blue-dark, 0.94) 0%,
+    rgba($phoebe-blue-deep, 0.96) 100%
+  );
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba($phoebe-blue-bright, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba($phoebe-lilac, 0.03);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  &.is-scrolled {
+    height: 70px;
+    box-shadow: 0 8px 32px rgba(2, 4, 24, 0.4),
+      0 0 0 1px rgba($phoebe-lilac, 0.05);
+    border-bottom-color: rgba($phoebe-blue-bright, 0.18);
+  }
+
+  &.menu-open {
+    background: rgba($phoebe-blue-deep, 0.98);
+  }
 }
 
-.navbar.is-scrolled {
-  height: 60px;
-  box-shadow: 0 8px 30px rgba(2, 4, 8, 0.7);
+/* ==================== 背景特效 ==================== */
+.nav-bg-effects {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  border-radius: 0 0 24px 24px;
+  z-index: 1;
+
+  .halo-orbital {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba($phoebe-lilac, 0.08) 0%,
+      rgba($phoebe-blue-light, 0.04) 30%,
+      transparent 70%
+    );
+    filter: blur(40px);
+    animation: orbitalFloat 20s ease-in-out infinite;
+  }
+
+  .light-streams {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba($phoebe-gold, 0.02) 20%,
+      rgba($phoebe-lilac, 0.03) 40%,
+      rgba($phoebe-blue-bright, 0.02) 60%,
+      transparent 100%
+    );
+    opacity: 0.3;
+    animation: streamFlow 8s linear infinite;
+  }
+
+  .particle-field {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+        circle at 20% 30%,
+        rgba($phoebe-gold, 0.04) 0%,
+        transparent 2%
+      ),
+      radial-gradient(
+        circle at 80% 60%,
+        rgba($phoebe-lilac, 0.03) 0%,
+        transparent 2%
+      ),
+      radial-gradient(
+        circle at 40% 80%,
+        rgba($phoebe-blue-bright, 0.02) 0%,
+        transparent 2%
+      );
+    background-size: 300px 300px;
+    animation: particleShift 60s linear infinite;
+  }
+
+  .diffraction-glow {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(
+      to top,
+      rgba($phoebe-lilac, 0.1) 0%,
+      rgba($phoebe-blue-light, 0.05) 30%,
+      transparent 100%
+    );
+    filter: blur(20px);
+    animation: glowPulse 4s ease-in-out infinite;
+  }
 }
 
-/* 容器 */
-.navbar__container {
+@keyframes orbitalFloat {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateX(-52%) translateY(-10px) rotate(120deg);
+  }
+  66% {
+    transform: translateX(-48%) translateY(10px) rotate(240deg);
+  }
+}
+
+@keyframes streamFlow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes particleShift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 300px 300px;
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ==================== 布局容器 ==================== */
+.nav-container {
   position: relative;
   z-index: 2;
-  max-width: 1200px;
+  max-width: 1400px;
+  height: 100%;
   margin: 0 auto;
-  padding: 0 18px;
+  padding: 0 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  height: 100%;
+  gap: 24px;
 }
 
-/* Logo */
-.navbar__logo {
+/* ==================== Logo样式 ==================== */
+.nav-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
+  gap: 16px;
+  text-decoration: none;
+  flex-shrink: 0;
+  position: relative;
+  padding: 8px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  background: rgba($phoebe-white, 0.02);
+  border: 1px solid transparent;
 
-.navbar__logo .logo-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
+  &:hover {
+    background: rgba($phoebe-white, 0.04);
+    border-color: rgba($phoebe-gold, 0.1);
+    transform: translateY(-2px);
 
-  svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    // svg 内的形状会继承这个 fill（方便主题化）
-    fill: $hair;
-    transition: transform 0.28s ease, filter 0.28s ease;
-    filter: drop-shadow(0 6px 18px rgba(233, 195, 106, 0.12));
-    animation: badgeGlow 3.6s ease-in-out infinite;
+    .logo-orb {
+      transform: scale(1.05) rotate(15deg);
+
+      .orb-ring {
+        animation-play-state: running;
+      }
+    }
+
+    .logo-sparkle {
+      opacity: 1;
+    }
+  }
+
+  .logo-orb {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    .orb-core {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, $phoebe-gold, $phoebe-lilac);
+      filter: drop-shadow(0 0 20px rgba($phoebe-gold, 0.6));
+      z-index: 2;
+      animation: corePulse 2s ease-in-out infinite;
+    }
+
+    .orb-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid;
+      opacity: 0.3;
+
+      &.ring-1 {
+        width: 100%;
+        height: 100%;
+        border-color: $phoebe-gold;
+        animation: ringSpin 8s linear infinite paused;
+      }
+
+      &.ring-2 {
+        width: 70%;
+        height: 70%;
+        border-color: $phoebe-lilac;
+        animation: ringSpin 6s linear reverse infinite paused;
+      }
+
+      &.ring-3 {
+        width: 40%;
+        height: 40%;
+        border-color: $phoebe-blue-bright;
+        animation: ringSpin 4s linear infinite paused;
+      }
+    }
+
+    .staff-symbol {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      color: $phoebe-white;
+      z-index: 3;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 0 8px rgba($phoebe-white, 0.5));
+      }
+    }
+
+    .orb-glow {
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba($phoebe-gold, 0.3) 0%,
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 1;
+    }
+  }
+
+  &:hover .orb-glow {
+    opacity: 0.8;
+  }
+
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+
+    .brand-main {
+      color: $phoebe-white;
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, $phoebe-gold, $phoebe-white);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 4px 20px rgba($phoebe-gold, 0.2);
+    }
+
+    .brand-sub {
+      color: rgba($phoebe-white, 0.6);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+  }
+
+  .logo-sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: $phoebe-white;
+    opacity: 0;
+    pointer-events: none;
+
+    &:nth-child(1) {
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &:nth-child(2) {
+      top: 50%;
+      right: 0;
+      transform: translate(50%, -50%) rotate(var(--sparkle-offset));
+    }
+
+    &:nth-child(3) {
+      bottom: 0;
+      left: 50%;
+      transform: translate(-50%, 50%) rotate(calc(var(--sparkle-offset) * 2));
+    }
+
+    animation: sparkleTwinkle var(--sparkle-duration) ease-in-out
+      var(--sparkle-delay) infinite;
   }
 }
 
-@keyframes badgeGlow {
-
+@keyframes corePulse {
   0%,
   100% {
-    transform: translateY(0);
-    opacity: 0.95;
-    filter: drop-shadow(0 6px 12px rgba(233, 195, 106, 0.06));
-  }
-
-  50% {
-    transform: translateY(-3px);
+    transform: scale(1);
     opacity: 1;
-    filter: drop-shadow(0 10px 26px rgba(233, 195, 106, 0.12));
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
   }
 }
 
-.navbar__logo .brand-text {
-  color: transparent;
-  font-weight: 700;
-  font-size: 1.2rem;
-  letter-spacing: 0.6px;
-  background: linear-gradient(90deg, $gold 0%, $hair 30%, $accent-blue 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 6px 18px rgba(59, 123, 224, 0.06);
+@keyframes ringSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.navbar__logo:hover .logo-icon {
-  transform: translateY(-3px) rotate(-6deg);
+@keyframes sparkleTwinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
-/* 在线数 */
-.online-count {
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
-}
-
-.online-count .count {
-  color: $accent-blue;
-  font-weight: 800;
-  margin-left: 8px;
-  text-shadow: 0 4px 18px rgba($eye-lilac, 0.08);
+/* ==================== 在线状态指示器 ==================== */
+.online-indicator {
   position: relative;
-}
-
-/* 汉堡（小屏） */
-.navbar__toggle {
-  display: none;
-  position: relative;
-  width: 44px;
-  height: 36px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.02);
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.18s;
-}
-
-.navbar__toggle .line {
-  display: block;
-  height: 2px;
-  width: 22px;
-  margin: 4px 0;
-  border-radius: 2px;
-  background: linear-gradient(90deg,
-      rgba($accent-blue, 0.95) 0%,
-      $gold 60%,
-      rgba($eye-lilac, 0.95) 100%);
-  box-shadow: 0 6px 18px rgba(217, 58, 58, 0.12),
-    0 0 10px rgba(217, 58, 58, 0.06);
-  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s;
-  transform-origin: center;
-}
-
-.navbar__toggle.active {
-  background: linear-gradient(180deg,
-      rgba(122, 57, 255, 0.06),
-      rgba(255, 102, 196, 0.04));
-}
-
-.navbar__toggle.active .line--1 {
-  transform: translateY(6px) rotate(45deg);
-}
-
-.navbar__toggle.active .line--2 {
-  opacity: 0;
-  transform: scaleX(0.6);
-}
-
-.navbar__toggle.active .line--3 {
-  transform: translateY(-6px) rotate(-45deg);
-}
-
-/* 链接列表 */
-.navbar__links {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
+  padding: 10px 18px;
+  background: rgba($phoebe-blue-light, 0.08);
+  border-radius: 16px;
+  border: 1px solid rgba($phoebe-blue-light, 0.12);
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
+
+  .pulse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $phoebe-gold, $phoebe-lilac);
+    box-shadow: 0 0 20px rgba($phoebe-lilac, 0.5);
+    animation: statusPulse 2s ease-in-out infinite;
+  }
+
+  .pulse-ring {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid $phoebe-gold;
+    left: 4px;
+    opacity: 0;
+    animation: ringExpand 2s ease-out infinite;
+
+    &.ring-delay {
+      animation-delay: 1s;
+    }
+  }
+
+  .count-text {
+    color: rgba($phoebe-white, 0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    em {
+      color: $phoebe-gold;
+      font-style: normal;
+      font-weight: 700;
+      margin: 0 2px;
+    }
+  }
+}
+
+@keyframes statusPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes ringExpand {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* ==================== 主要导航链接 ==================== */
+.nav-main-area {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-primary-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   list-style: none;
   margin: 0;
   padding: 0;
-  position: relative;
-  z-index: 3;
-}
 
-.navbar__links li .link {
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  display: inline-block;
-  padding: 8px 6px;
-  border-radius: 8px;
-  transition: transform 0.18s, color 0.18s;
-  position: relative;
-  overflow: visible;
-}
-
-.link-inner {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.link-text {
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-.link-glow {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -8px;
-  height: 3px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, #faf6f2 0%, #d93a3a 40%, #b82b2b 100%);
-  opacity: 0;
-  transform: translateY(6px) scaleX(0.98);
-  filter: blur(8px);
-  pointer-events: none;
-  transition: opacity 0.28s, transform 0.28s;
-}
-
-.navbar__links li .link:hover {
-  transform: translateY(-3px);
-  color: $accent-blue;
-}
-
-.navbar__links li .link:hover .link-glow {
-  opacity: 0.95;
-  transform: translateY(0) scaleX(1);
-}
-
-.navbar__links li .link.router-link-active,
-.navbar__links li .link.active {
-  color: $accent-blue;
-  text-shadow: 0 6px 28px rgba(59, 123, 224, 0.1);
-}
-
-.navbar__links li .link.router-link-active .link-glow,
-.navbar__links li .link.active .link-glow {
-  opacity: 1;
-  transform: translateY(0) scaleX(1);
-  box-shadow: 0 8px 28px rgba(184, 43, 43, 0.08);
-}
-
-/* 小屏样式 */
-@media (max-width: 768px) {
-  .navbar__toggle {
-    display: flex;
-    flex-direction: column;
+  li {
+    position: relative;
   }
 
-  .navbar__logo {
+  .nav-primary-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    color: rgba($phoebe-white, 0.85);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    border-radius: 14px;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow: hidden;
+    background: rgba($phoebe-white, 0.02);
+    border: 1px solid transparent;
+
+    .link-decor {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: $phoebe-gold;
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.3s ease;
+    }
+
+    .link-text {
+      position: relative;
+      z-index: 2;
+      letter-spacing: 0.3px;
+    }
+
+    .link-aura {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        rgba($phoebe-blue-light, 0.1) 0%,
+        rgba($phoebe-lilac, 0.05) 100%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    &:hover {
+      color: $phoebe-white;
+      background: rgba($phoebe-white, 0.04);
+      border-color: rgba($phoebe-gold, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba($phoebe-gold, 0.05);
+
+      .link-decor {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .link-aura {
+        opacity: 1;
+      }
+
+      &::before {
+        transform: translateX(0);
+      }
+    }
+
+    &.is-active {
+      color: $phoebe-white;
+      background: linear-gradient(
+        135deg,
+        rgba($phoebe-blue-light, 0.15) 0%,
+        rgba($phoebe-lilac, 0.1) 100%
+      );
+      border-color: rgba($phoebe-gold, 0.2);
+      box-shadow: 0 8px 24px rgba($phoebe-blue-light, 0.15),
+        inset 0 1px 0 rgba($phoebe-white, 0.1);
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40%;
+        height: 2px;
+        background: linear-gradient(90deg, $phoebe-gold, $phoebe-lilac);
+        border-radius: 2px;
+        box-shadow: 0 0 12px rgba($phoebe-lilac, 0.5);
+      }
+
+      .link-decor {
+        opacity: 1;
+        transform: scale(1);
+        background: $phoebe-white;
+      }
+    }
+
+    &.external {
+      background: linear-gradient(
+        135deg,
+        rgba($phoebe-blue-light, 0.1) 0%,
+        rgba($phoebe-lilac, 0.05) 100%
+      );
+
+      .external-marker {
+        color: $phoebe-gold;
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+/* ==================== 更多下拉菜单 ==================== */
+.more-dropdown-wrapper {
+  position: relative;
+
+  .more-dropdown-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    color: rgba($phoebe-white, 0.85);
+    background: rgba($phoebe-white, 0.02);
+    border: 1px solid rgba($phoebe-gold, 0.1);
+    border-radius: 14px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    .trigger-text {
+      letter-spacing: 0.3px;
+    }
+
+    .trigger-icon {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .trigger-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        rgba($phoebe-gold, 0.1) 0%,
+        rgba($phoebe-lilac, 0.05) 100%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover {
+      color: $phoebe-white;
+      background: rgba($phoebe-white, 0.04);
+      border-color: rgba($phoebe-gold, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba($phoebe-gold, 0.05);
+
+      .trigger-glow {
+        opacity: 1;
+      }
+    }
+
+    &.dropdown-open {
+      color: $phoebe-white;
+      background: linear-gradient(
+        135deg,
+        rgba($phoebe-blue-light, 0.15) 0%,
+        rgba($phoebe-lilac, 0.1) 100%
+      );
+      border-color: rgba($phoebe-gold, 0.25);
+
+      .trigger-icon {
+        transform: rotate(180deg);
+      }
+
+      .trigger-glow {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+/* 下拉菜单动画 */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* 下拉菜单内容 */
+.more-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 240px;
+  background: rgba($phoebe-blue-deep, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 18px;
+  border: 1px solid rgba($phoebe-gold, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba($phoebe-white, 0.05), inset 0 1px 0 rgba($phoebe-white, 0.1);
+  overflow: hidden;
+  z-index: 1000;
+
+  .dropdown-header {
+    padding: 18px 20px 16px;
+    border-bottom: 1px solid rgba($phoebe-white, 0.08);
+    background: linear-gradient(
+      90deg,
+      rgba($phoebe-blue-light, 0.1) 0%,
+      rgba($phoebe-lilac, 0.05) 100%
+    );
+
+    .header-icon {
+      color: $phoebe-gold;
+      font-size: 1.2rem;
+      margin-right: 10px;
+    }
+
+    .header-text {
+      color: $phoebe-white;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .dropdown-links {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+
+    li {
+      position: relative;
+
+      .dropdown-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        color: rgba($phoebe-white, 0.8);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+
+        .dropdown-link-text {
+          flex: 1;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .dropdown-link-glow {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            90deg,
+            rgba($phoebe-blue-light, 0.1) 0%,
+            rgba($phoebe-lilac, 0.05) 100%
+          );
+          opacity: 0;
+          transition: opacity 0.2s ease;
+          z-index: -1;
+        }
+
+        &:hover {
+          color: $phoebe-white;
+          padding-left: 24px;
+
+          .dropdown-link-glow {
+            opacity: 1;
+          }
+        }
+
+        &.is-active {
+          color: $phoebe-white;
+          background: linear-gradient(
+            90deg,
+            rgba($phoebe-blue-light, 0.15) 0%,
+            rgba($phoebe-lilac, 0.1) 100%
+          );
+
+          &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 60%;
+            background: linear-gradient(to bottom, $phoebe-gold, $phoebe-lilac);
+            border-radius: 0 2px 2px 0;
+          }
+        }
+
+        &.external {
+          .external-icon {
+            color: $phoebe-gold;
+            font-size: 0.9rem;
+            margin-left: 8px;
+          }
+        }
+      }
+
+      &.dropdown-external {
+        margin-top: 8px;
+        border-top: 1px solid rgba($phoebe-white, 0.08);
+
+        .dropdown-link {
+          background: linear-gradient(
+            90deg,
+            rgba($phoebe-blue-light, 0.08) 0%,
+            rgba($phoebe-lilac, 0.04) 100%
+          );
+
+          &:hover {
+            background: linear-gradient(
+              90deg,
+              rgba($phoebe-blue-light, 0.12) 0%,
+              rgba($phoebe-lilac, 0.08) 100%
+            );
+          }
+        }
+      }
+    }
+  }
+
+  .dropdown-footer {
+    padding: 12px 20px;
+    border-top: 1px solid rgba($phoebe-white, 0.08);
+    text-align: center;
+
+    .footer-text {
+      color: rgba($phoebe-white, 0.5);
+      font-size: 0.8rem;
+    }
+  }
+}
+
+/* ==================== 移动端菜单切换按钮 ==================== */
+.menu-toggle-v2 {
+  display: none;
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba($phoebe-blue-light, 0.08);
+  border: 1px solid rgba($phoebe-blue-bright, 0.15);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+
+  .toggle-line {
+    width: 22px;
+    height: 2px;
+    background: linear-gradient(90deg, $phoebe-gold, $phoebe-blue-bright);
+    border-radius: 1px;
+    margin: 3px 0;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform-origin: center;
+  }
+
+  .toggle-orb {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, $phoebe-gold, $phoebe-lilac);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .toggle-halo {
+    position: absolute;
+    inset: -5px;
+    border-radius: 21px;
+    border: 2px solid rgba($phoebe-gold, 0.3);
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+
+  &:hover {
+    background: rgba($phoebe-blue-light, 0.12);
+    border-color: rgba($phoebe-blue-bright, 0.25);
+
+    .toggle-orb {
+      opacity: 1;
+    }
+
+    .toggle-halo {
+      opacity: 1;
+      inset: -8px;
+    }
+  }
+
+  &.active {
+    background: rgba($phoebe-blue-light, 0.15);
+    border-color: rgba($phoebe-blue-bright, 0.3);
+
+    .toggle-line {
+      &:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+      &:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+      &:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+    }
+
+    .toggle-orb {
+      opacity: 1;
+      animation: orbPulse 1s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes orbPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+/* ==================== 移动端菜单面板 ==================== */
+.mobile-menu-panel {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba($phoebe-blue-deep, 0.7);
+  z-index: 1999;
+
+  .panel-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 320px;
+    height: 100vh;
+    background: linear-gradient(
+      180deg,
+      rgba($phoebe-blue-dark, 0.98) 0%,
+      rgba($phoebe-blue-deep, 0.97) 100%
+    );
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-left: 1px solid rgba($phoebe-gold, 0.1);
+    box-shadow: -10px 0 60px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    &.panel-open {
+      transform: translateX(0);
+    }
+  }
+
+  .panel-header {
+    padding: 24px;
+    border-bottom: 1px solid rgba($phoebe-white, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .panel-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .panel-logo-orb {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba($phoebe-gold, 0.8),
+          rgba($phoebe-lilac, 0.6)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        .orb-core-small {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background: $phoebe-white;
+          box-shadow: 0 0 12px rgba($phoebe-white, 0.8);
+          animation: corePulse 2s ease-in-out infinite;
+        }
+      }
+
+      .panel-title {
+        color: $phoebe-white;
+        font-weight: 700;
+        font-size: 1.3rem;
+        background: linear-gradient(90deg, $phoebe-gold, $phoebe-white);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+
+    .panel-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba($phoebe-white, 0.05);
+      border: 1px solid rgba($phoebe-white, 0.1);
+      color: $phoebe-white;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba($phoebe-white, 0.1);
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .panel-online {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba($phoebe-white, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .panel-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, $phoebe-gold, $phoebe-lilac);
+      box-shadow: 0 0 12px rgba($phoebe-lilac, 0.6);
+      animation: statusPulse 2s ease-in-out infinite;
+    }
+
+    .panel-count {
+      color: rgba($phoebe-white, 0.9);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
+
+  .panel-links {
+    flex: 1;
+    padding: 20px 0;
+    .panel-section {
+      margin-bottom: 24px;
+
+      .section-title {
+        color: rgba($phoebe-white, 0.6);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0 24px 12px;
+        margin: 0;
+      }
+
+      .section-links {
+        display: flex;
+        flex-direction: column;
+
+        .panel-link {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 24px;
+          color: rgba($phoebe-white, 0.85);
+          text-decoration: none;
+          transition: all 0.2s ease;
+          position: relative;
+          border-left: 3px solid transparent;
+
+          .panel-link-text {
+            flex: 1;
+            font-size: 0.95rem;
+            font-weight: 500;
+          }
+
+          .panel-link-arrow {
+            color: rgba($phoebe-white, 0.5);
+            font-size: 1.2rem;
+            transition: transform 0.2s ease;
+          }
+
+          .external-badge {
+            background: rgba($phoebe-blue-light, 0.2);
+            color: $phoebe-blue-bright;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+          }
+
+          &:hover {
+            color: $phoebe-white;
+            background: rgba($phoebe-white, 0.03);
+            border-left-color: $phoebe-gold;
+            padding-left: 28px;
+
+            .panel-link-arrow {
+              transform: translateX(3px);
+              color: $phoebe-gold;
+            }
+          }
+
+          &.is-active {
+            color: $phoebe-white;
+            background: linear-gradient(
+              90deg,
+              rgba($phoebe-blue-light, 0.1) 0%,
+              transparent 100%
+            );
+            border-left-color: $phoebe-blue-light;
+
+            &::before {
+              content: "";
+              position: absolute;
+              right: 0;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 3px;
+              height: 40%;
+              background: linear-gradient(
+                to bottom,
+                $phoebe-gold,
+                $phoebe-lilac
+              );
+              border-radius: 2px 0 0 2px;
+            }
+          }
+
+          &.external {
+            background: rgba($phoebe-blue-light, 0.05);
+
+            &:hover {
+              background: rgba($phoebe-blue-light, 0.1);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .panel-footer {
+    padding: 20px 24px;
+    border-top: 1px solid rgba($phoebe-white, 0.08);
+    text-align: center;
+    position: relative;
+
+    .footer-glow {
+      position: absolute;
+      top: -50px;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: linear-gradient(
+        to top,
+        rgba($phoebe-lilac, 0.1),
+        transparent
+      );
+      filter: blur(10px);
+    }
+
+    .footer-text {
+      color: rgba($phoebe-white, 0.6);
+      font-size: 0.85rem;
+      font-style: italic;
+      position: relative;
+      z-index: 2;
+    }
+  }
+}
+
+/* 移动端面板动画 */
+.mobile-panel-enter-active,
+.mobile-panel-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.mobile-panel-enter-from,
+.mobile-panel-leave-to {
+  opacity: 0;
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 1200px) {
+  .nav-container {
+    padding: 0 20px;
+  }
+
+  .nav-primary-links .nav-primary-link {
+    padding: 12px 18px;
+    font-size: 0.9rem;
+  }
+
+  .more-dropdown-trigger {
+    padding: 12px 18px;
+  }
+}
+
+@media (max-width: 992px) {
+  .nav-main-area,
+  .online-indicator,
+  .more-dropdown-wrapper {
     display: none;
   }
 
-  .navbar__links {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 10px;
-    right: 10px;
-    margin: 0 auto;
-    background: linear-gradient(180deg,
-        rgba(12, 6, 8, 0.78),
-        rgba(8, 4, 6, 0.9));
-    border-radius: 14px;
-    padding: 12px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    max-height: 0;
-    overflow: hidden;
-    transform-origin: top center;
-    transition: max-height 0.36s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.28s;
-    opacity: 0;
-    pointer-events: none;
-    box-shadow: 0 12px 40px rgba(7, 4, 20, 0.6);
-  }
-
-  .navbar__links.is-open {
-    max-height: 520px;
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .navbar__links li .link {
+  .menu-toggle-v2 {
     display: flex;
-    justify-content: center;
-    padding: 12px;
-    background: linear-gradient(180deg,
-        rgba(74, 16, 16, 0.04),
-        rgba(217, 58, 58, 0.02));
-    border-radius: 10px;
+  }
+
+  .mobile-menu-panel {
+    display: block;
+  }
+
+  .mobile-external {
+    display: block;
+  }
+
+  .nav-logo {
+    .logo-text {
+      .brand-main {
+        font-size: 1.3rem;
+      }
+
+      .brand-sub {
+        font-size: 0.7rem;
+      }
+    }
   }
 }
 
-/* 动画 keyframes */
-@keyframes floatUp {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 0.2;
+@media (max-width: 576px) {
+  .nav-container {
+    padding: 0 16px;
   }
 
-  30% {
-    opacity: 0.9;
+  .nav-logo {
+    gap: 12px;
+
+    .logo-orb {
+      width: 40px;
+      height: 40px;
+    }
+
+    .logo-text {
+      .brand-main {
+        font-size: 1.2rem;
+      }
+    }
   }
 
-  60% {
-    transform: translateY(-26px) scale(1.05);
-    opacity: 0.6;
+  .menu-toggle-v2 {
+    width: 48px;
+    height: 48px;
   }
 
-  100% {
-    transform: translateY(-60px) scale(0.95);
-    opacity: 0;
-  }
-}
-
-@keyframes flowMove {
-  0% {
-    transform: translateX(-30%) rotate(-6deg) scaleX(1);
-    opacity: 0.8;
-  }
-
-  50% {
-    transform: translateX(-10%) rotate(-6deg) scaleX(1.02);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateX(-30%) rotate(-6deg) scaleX(1);
-    opacity: 0.8;
-  }
-}
-
-@keyframes petalFall {
-  0% {
-    transform: translate3d(0, -10vh, 0) rotate(0deg);
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 1;
-  }
-
-  60% {
-    transform: translate3d(-8vw, 45vh, 0) rotate(45deg);
-    opacity: 0.9;
-  }
-
-  100% {
-    transform: translate3d(-12vw, 90vh, 0) rotate(80deg);
-    opacity: 0;
+  .mobile-menu-panel .panel-content {
+    width: 280px;
   }
 }
 </style>

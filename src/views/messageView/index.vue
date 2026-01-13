@@ -3,16 +3,17 @@
     <!-- 半透明顶部标题 -->
     <header class="board-header" role="banner">
       <div class="title-wrap">
-        <h1>留言板</h1>
+        <!-- 修改显示总条数 -->
+        <span>(共{{ totalMessages }}条留言)</span>
         <p class="subtitle">在这里，思念与微光一同流淌。</p>
       </div>
     </header>
 
     <!-- 留言展示区 -->
-    <section class="message-list">
+    <section class="message-list" ref="listRef">
       <transition-group name="msg" tag="div" class="message-list-inner">
         <!-- skeleton loading -->
-        <div v-if="loading" class="skeleton-wrap" key="skeleton">
+        <div v-if="loading && !hasMore" class="skeleton-wrap" key="skeleton">
           <div class="skeleton" v-for="i in 4" :key="i">
             <div class="sk-avatar"></div>
             <div class="sk-lines">
@@ -23,8 +24,16 @@
         </div>
 
         <!-- messages -->
-        <div v-for="(msg, idx) in messages" :key="msg.id || msg._tempId || idx" class="message-card" :data-index="idx"
-          tabindex="0" role="article" :aria-label="`留言来自 ${msg.name || '匿名'}，内容：${msg.content}`">
+        <div
+          v-for="(msg, idx) in messages"
+          :key="msg.id || msg._tempId || idx"
+          class="message-card"
+          :data-index="idx"
+          tabindex="0"
+          role="article"
+          :aria-label="`留言来自 ${msg.name || '匿名'}，内容：${msg.content}`"
+        >
+          <!-- 内容不变 -->
           <div class="message-meta">
             <div class="left-meta">
               <div class="name-avatar" :title="msg.name || '匿名'">
@@ -42,22 +51,57 @@
 
           <p class="message-content">{{ msg.content }}</p>
         </div>
+
+        <!-- 加载更多提示 -->
+        <div v-if="loadingMore" class="loading-more" key="loading-more">
+          <div class="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          正在加载更多留言...
+        </div>
+
+        <!-- 没有更多数据提示 -->
+        <div
+          v-if="!hasMore && messages.length > 0 && !loading"
+          class="no-more"
+          key="no-more"
+        >
+          ✨ 已加载全部留言
+        </div>
+        <div
+          v-if="hasMore"
+          ref="sentinelRef"
+          class="sentinel"
+          key="sentinel"
+        ></div>
       </transition-group>
     </section>
-
     <!-- 底部发送区 -->
     <section class="message-form" aria-label="写下你的留言">
       <label class="sr-only" for="mb-name">你的昵称</label>
-      <input id="mb-name" v-model="name" type="text" placeholder="你的昵称" @keydown.enter.prevent />
+      <input
+        id="mb-name"
+        v-model="name"
+        type="text"
+        placeholder="你的昵称"
+        @keydown.enter.prevent
+      />
 
       <label class="sr-only" for="mb-content">留言内容</label>
-      <textarea id="mb-content" v-model="content" placeholder="写下你的留言..." @keydown.ctrl.enter.prevent="submitMessage"
-        @input="autoGrow" ref="textareaRef" />
+      <textarea
+        id="mb-content"
+        v-model="content"
+        placeholder="写下你的留言..."
+        @keydown.ctrl.enter.prevent="submitMessage"
+        @input="autoGrow"
+        ref="textareaRef"
+      />
 
       <div class="form-row">
         <div class="hint">按 <kbd>Ctrl</kbd> + <kbd>Enter</kbd> 快捷发送</div>
-        <button @click="submitMessage" :disabled="isSending || !content.trim()"
-          aria-disabled="isSending || !content.trim()">
+        <button @click="submitMessage" :disabled="isSending || !content.trim()">
           <span v-if="!isSending">发送</span>
           <span v-else>发送中…</span>
         </button>
@@ -67,42 +111,143 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, onUnmounted, watch } from "vue";
 import { getMessageList, createMessage } from "@/api/modules/message";
+
+// 分页相关变量
+const currentPage = ref(1);
+const pageSize = ref(50);
+const totalMessages = ref(0);
+const hasMore = ref(true);
+const loading = ref(true);
+const loadingMore = ref(false);
+const isSending = ref(false);
 
 const messages = ref<any[]>([]);
 const name = ref(localStorage.getItem("feibi_name") || "");
 const content = ref("");
-const loading = ref(true);
-const isSending = ref(false);
-
+const listRef = ref<HTMLElement | null>(null);
+const sentinelRef = ref<HTMLElement | null>(null);
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
+// Intersection Observer
+let observer: IntersectionObserver | null = null;
 
-const fetchMessages = async () => {
-  loading.value = true;
+// 防抖处理
+let scrollTimer: number | null = null;
+
+// 获取留言列表
+const fetchMessages = async (loadMore = false) => {
+  if (loadMore) {
+    loadingMore.value = true;
+  } else {
+    loading.value = true;
+  }
+
   try {
-    const res = await getMessageList({ page: 1, pageSize: 9999 });
-    messages.value = res.data || [];
+    const res = await getMessageList({
+      page: currentPage.value,
+      pageSize: pageSize.value,
+    });
+
+    if (loadMore) {
+      // 追加数据
+      // 追加数据（过滤重复）
+      const newMessages = res.data || [];
+      const existingIds = new Set(messages.value.map((m) => m.id));
+      const filteredMessages = newMessages.filter(
+        (msg) => !existingIds.has(msg.id)
+      );
+      messages.value = [...messages.value, ...filteredMessages];
+    } else {
+      // 首次加载
+      messages.value = res.data || [];
+      // 重置总条数（如果接口返回了总数）
+      totalMessages.value = res.pagination.total;
+    }
+
+    // 判断是否还有更多数据
+    if (res.pagination.total > pageSize.value * currentPage.value) {
+      hasMore.value = true;
+    } else {
+      hasMore.value = false;
+    }
+
     await nextTick();
+    // 如果有更多数据且是追加加载，重新观察哨兵元素
+    if (loadMore && hasMore.value && sentinelRef.value && observer) {
+      observer.unobserve(sentinelRef.value);
+      observer.observe(sentinelRef.value);
+    }
   } catch (err) {
     console.error(err);
+    hasMore.value = false;
   } finally {
-    loading.value = false;
+    if (loadMore) {
+      loadingMore.value = false;
+    } else {
+      loading.value = false;
+    }
   }
 };
+// 初始化 Intersection Observer
+const initObserver = () => {
+  observer = new IntersectionObserver(
+    (entries) => {
+      const target = entries[0];
+      if (target.isIntersecting && !loadingMore.value && hasMore.value) {
+        loadMoreMessages();
+      }
+    },
+    {
+      root: listRef.value, // 使用列表容器作为根
+      rootMargin: "100px", // 提前100px触发
+      threshold: 0.1, // 10%可见时触发
+    }
+  );
 
+  // 等待列表渲染后观察哨兵元素
+  nextTick(() => {
+    if (sentinelRef.value && observer) {
+      observer.observe(sentinelRef.value);
+    }
+  });
+};
+
+// 加载更多
+const loadMoreMessages = async () => {
+  if (loadingMore.value || !hasMore.value) return;
+
+  currentPage.value++;
+  await fetchMessages(true);
+};
+
+// 提交留言（需要重置分页）
 const submitMessage = async () => {
   if (!content.value.trim() || isSending.value) return;
+
   isSending.value = true;
   const payload = { name: name.value || "匿名", content: content.value };
+
   try {
     localStorage.setItem("feibi_name", name.value);
     content.value = "";
     await nextTick();
+
     // 发送请求
     await createMessage(payload);
-    // 重新同步列表（更可靠）
+
+    // 重置分页，重新加载第一页
+    currentPage.value = 1;
+    hasMore.value = true;
+    messages.value = []; // 清空当前列表
     await fetchMessages();
+    nextTick(() => {
+      initObserver();
+    });
+    // 滚动到顶部
+    if (listRef.value) {
+      listRef.value.scrollTop = 0;
+    }
   } catch (err) {
     console.error(err);
   } finally {
@@ -110,10 +255,10 @@ const submitMessage = async () => {
   }
 };
 
+// 其他工具函数保持不变
 const formatTime = (time: string) => {
   if (!time) return "";
   const d = new Date(time);
-  // 例如：2025-08-11 15:30
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
@@ -134,430 +279,623 @@ const autoGrow = (e?: Event) => {
   const h = Math.min(ta.scrollHeight, 220);
   ta.style.height = h + "px";
 };
+// 监听 messages 变化，确保哨兵元素在正确位置
+watch(messages, () => {
+  nextTick(() => {
+    if (sentinelRef.value && observer) {
+      observer.unobserve(sentinelRef.value);
+      observer.observe(sentinelRef.value);
+    }
+  });
+});
 
 onMounted(() => {
   fetchMessages();
-  // ensure textarea autosize initial
-  nextTick(() => autoGrow());
+  nextTick(() => {
+    autoGrow();
+    initObserver();
+  });
+});
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect();
+  }
 });
 </script>
 
 <style scoped lang="scss">
+/* 菲比风格配色变量 */
+$phoebe-gold: #f6de97;
+$phoebe-gold-light: #fff9e6;
+$phoebe-blue-dark: #0c1e3a;
+$phoebe-blue-deep: #07122b;
+$phoebe-blue-light: #3b7be0;
+$phoebe-blue-bright: #6aa7ff;
+$phoebe-white: #fafcfd;
+$phoebe-white-trans: rgba(250, 252, 253, 0.95);
+
+/* 扩展透明度变量 */
+$gold-trans-10: rgba(246, 222, 151, 0.1);
+$gold-trans-20: rgba(246, 222, 151, 0.2);
+$gold-trans-30: rgba(246, 222, 151, 0.3);
+$gold-trans-40: rgba(246, 222, 151, 0.4);
+$blue-trans-10: rgba(59, 123, 224, 0.1);
+$blue-trans-20: rgba(59, 123, 224, 0.2);
+$blue-trans-30: rgba(59, 123, 224, 0.3);
+$dark-trans-40: rgba(7, 18, 43, 0.4);
+$dark-trans-60: rgba(7, 18, 43, 0.6);
+$white-trans-20: rgba(250, 252, 253, 0.2);
+$white-trans-50: rgba(250, 252, 253, 0.5);
+$white-trans-80: rgba(250, 252, 253, 0.8);
+
+/* 页面容器 */
 .megumi-message-board {
-  position: relative;
   min-height: 100vh;
-  padding-top: 110px;
+  padding-top: 120px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg,
-      #fffafc 0%,
-      /* 顶部奶白 */
-      #e0f0ff 50%,
-      /* 浅蓝渐变 */
-      #c4e4ff 100%,
-      /* 更亮蓝 */
-    );
-
-  font-family: "Noto Sans SC", "Noto Sans", system-ui, -apple-system, "Segoe UI",
-    Roboto, Arial;
-  color: #222;
+  background: linear-gradient(
+      160deg,
+      $phoebe-blue-deep 0%,
+      $phoebe-blue-dark 100%
+    ),
+    radial-gradient(circle at 20% 20%, $gold-trans-10 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, $blue-trans-10 0%, transparent 40%);
+  font-family: "Noto Sans SC", "Segoe UI", system-ui, sans-serif;
+  color: $phoebe-white;
   overflow: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  position: relative;
 
+  /* 背景装饰元素 */
+  &::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(180deg, $phoebe-blue-deep 0%, transparent 100%);
+    z-index: 1;
+    pointer-events: none;
+  }
+}
 
+/* 顶部标题栏 */
+.board-header {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 1rem;
+  background: $dark-trans-60;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid $gold-trans-30;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.title-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  span {
+    font-style: italic;
+    font-size: 1rem;
+    background: linear-gradient(90deg, $phoebe-gold, $phoebe-gold-light);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: $phoebe-white-trans;
+    font-style: italic;
+    text-align: right;
+    max-width: 300px;
+  }
+}
+
+/* 留言列表区域 */
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem 1rem;
+  position: relative;
+  z-index: 2;
+  padding-bottom: 300px;
+  & > .message-list-inner {
+    min-height: calc(100% + 1px); /* 确保内容撑开 */
+  }
+}
+
+.message-list-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* 骨架屏加载状态 */
+.skeleton-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  background: $dark-trans-40;
+  backdrop-filter: blur(10px);
+  border: 1px solid $blue-trans-20;
+  border-radius: 12px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.sk-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, $gold-trans-20, $gold-trans-10);
+  flex-shrink: 0;
+}
+
+.sk-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sk-line {
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, $blue-trans-20, $blue-trans-10);
+
+  &.short {
+    width: 40%;
+  }
+}
+
+/* 留言卡片 */
+.message-card {
+  background: $dark-trans-40;
+  backdrop-filter: blur(20px);
+  border: 1px solid $blue-trans-20;
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: $gold-trans-40;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px $gold-trans-20;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, $phoebe-gold, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+}
+
+.message-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.left-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.name-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: $phoebe-blue-dark;
+  background: linear-gradient(135deg, $phoebe-gold, #f8e5b9);
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.meta-texts {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $phoebe-gold;
+  margin-bottom: 0.3rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-time {
+  font-size: 0.85rem;
+  color: $white-trans-50;
+  font-weight: 400;
+}
+
+.meta-actions {
+  flex-shrink: 0;
+
+  .halo-star {
+    display: inline-block;
+    color: $phoebe-gold;
+    font-size: 1.2rem;
+    animation: haloPulse 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(246, 222, 151, 0.3));
+  }
+}
+
+@keyframes haloPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) rotate(180deg);
+  }
+}
+
+.message-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: $white-trans-80;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  position: relative;
+  padding-left: 0.5rem;
+
+  &::before {
+    content: "❝";
+    position: absolute;
+    left: -1.2rem;
+    top: -0.5rem;
+    color: $gold-trans-40;
+    font-size: 1.5rem;
+    opacity: 0.5;
+  }
+}
+.sentinel {
+  height: 1px;
+  width: 100%;
+  background: transparent;
+  pointer-events: none;
+}
+.loading-more {
+  text-align: center;
+  padding: 2rem 0;
+  color: $white-trans-50;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  .loading-dots {
+    display: flex;
+    gap: 0.5rem;
+
+    span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: $phoebe-gold;
+      animation: dotPulse 1.4s ease-in-out infinite;
+
+      &:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+    }
+  }
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.no-more {
+  text-align: center;
+  padding: 2rem 0;
+  color: $gold-trans-40;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* 优化滚动容器 */
+.message-list {
+  &::-webkit-scrollbar-thumb {
+    &:hover {
+      background: rgba(246, 222, 151, 0.6);
+    }
+  }
+}
+/* 留言表单 */
+.message-form {
+  position: fixed;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 1rem;
+  background: $dark-trans-60;
+  backdrop-filter: blur(30px);
+  border-top: 1px solid $gold-trans-30;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+#mb-name,
+#mb-content {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  margin-bottom: 1rem;
+  background: $dark-trans-40;
+  border: 1px solid $blue-trans-30;
+  border-radius: 12px;
+  color: $phoebe-white;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.3s ease;
+
+  &::placeholder {
+    color: $white-trans-50;
+  }
+
+  &:focus {
+    border-color: $phoebe-gold;
+    background: $dark-trans-60;
+    box-shadow: 0 0 0 2px $gold-trans-10;
+  }
+}
+
+#mb-content {
+  min-height: 80px;
+  max-height: 200px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.hint {
+  color: $white-trans-50;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  kbd {
+    background: $blue-trans-20;
+    border: 1px solid $blue-trans-30;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    font-family: monospace;
+    color: $phoebe-white;
+  }
+}
+
+button {
+  padding: 0.8rem 2rem;
+  background: linear-gradient(135deg, $phoebe-gold, #e9c36a);
+  color: $phoebe-blue-dark;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px $gold-trans-30;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, $gold-trans-20, $gold-trans-10);
+    color: $white-trans-50;
+  }
+}
+
+/* 消息过渡动画 */
+.msg-enter-from,
+.msg-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.msg-enter-active,
+.msg-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.msg-enter-to,
+.msg-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .megumi-message-board {
+    padding-top: 120px;
+  }
 
   .board-header {
-    position: absolute;
-    top: 72px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 32px);
-    max-width: 960px;
-    background: linear-gradient(180deg,
-        rgba(255, 250, 252, 0.78),
-        rgba(240, 248, 255, 0.62));
-    padding: 14px 18px;
-    border-radius: 14px;
-    box-shadow: 0 10px 34px rgba(158, 24, 32, 0.06);
-    backdrop-filter: blur(6px) saturate(120%);
-    z-index: 6;
-    border: 1px solid rgba(58, 123, 224, 0.06);
-
-
-    .title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      h1 {
-        margin: 0;
-        font-size: 18px;
-        color: #3b7be0;
-        /* 菲比蓝 */
-        letter-spacing: 0.4px;
-        font-weight: 800;
-      }
-
-      .subtitle {
-        margin: 0;
-        margin-left: auto;
-        color: #7a7f8c;
-        /* 柔和灰 */
-        font-size: 13px;
-        font-weight: 500;
-      }
-    }
-
+    padding: 1rem;
   }
 
-  /* ---------- 留言列表 ---------- */
+  .title-wrap {
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    span {
+      font-size: 0.9rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      text-align: left;
+    }
+  }
+
   .message-list {
-    z-index: 2;
-    position: relative;
-    flex: 1;
-    overflow-y: auto;
-    padding: 28px 20px 300px;
-    margin-top: 18px;
-
-    .message-list-inner {
-      max-width: 960px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      position: relative;
-      z-index: 2;
-    }
-
-    /* skeleton 样式保持，但色系替换为椿风 */
-    .skeleton-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-
-      .skeleton {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        padding: 12px;
-        background: linear-gradient(180deg,
-            rgba(255, 255, 255, 0.86),
-            rgba(230, 245, 255, 0.9));
-        box-shadow: 0 6px 18px rgba(58, 123, 224, 0.03);
-        border: 1px solid rgba(220, 235, 245, 0.7);
-        border-radius: 12px;
-      }
-
-      .sk-avatar {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
-        background: linear-gradient(90deg, #fff1a0, #ffe066);
-        /* 金发渐变 */
-      }
-
-      .sk-lines {
-        flex: 1;
-
-        .sk-line {
-          height: 10px;
-          border-radius: 6px;
-          background: linear-gradient(90deg,
-              rgba(255, 255, 255, 0.9),
-              rgba(225, 240, 255, 0.9));
-          margin-bottom: 8px;
-        }
-
-        .sk-line.short {
-          width: 40%;
-        }
-      }
-    }
+    padding: 1rem 0.5rem 300px;
   }
 
-  /* ---------- 单条消息卡片（椿风版） ---------- */
   .message-card {
-    background: linear-gradient(180deg,
-        rgba(255, 255, 255, 0.98),
-        rgba(250, 250, 255, 0.97));
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin: 0 auto;
-    width: calc(100% - 48px);
-    max-width: 960px;
-    box-shadow: 0 10px 30px rgba(58, 123, 224, 0.04);
-    border: 1px solid rgba(245, 235, 240, 0.8);
-    transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.28s;
-    transform-origin: center;
-    position: relative;
-    z-index: 3;
-
-
-    &:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 60px rgba(58, 123, 224, 0.08);
-    }
-
-    .message-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 8px;
-
-      .left-meta {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-
-        .name-avatar {
-          width: 48px;
-          height: 48px;
-          border-radius: 10px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 800;
-          color: #fff;
-          background: linear-gradient(180deg, #fff1a0 0%, #ffd966 100%);
-          /* 金发渐变 */
-          border: 2px solid rgba(255, 255, 255, 0.6);
-          box-shadow: inset 0 -6px 12px rgba(255, 223, 127, 0.08);
-          font-size: 16px;
-          flex-shrink: 0;
-        }
-
-        .meta-texts {
-          .message-name {
-            font-size: 15px;
-            color: #3b7be0;
-            /* 菲比蓝名字 */
-            font-weight: 800;
-            line-height: 1;
-          }
-
-          .message-time {
-            font-size: 12px;
-            color: #7a7f8c;
-            margin-top: 2px;
-          }
-        }
-      }
-
-      .meta-actions {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        color: #ffd966;
-
-        /* 金色小按钮点缀 */
-        .halo-star {
-          display: inline-block;
-          color: #6ec1ff;
-          text-shadow:
-            0 0 6px rgba(173, 221, 255, 0.8),
-            0 0 18px rgba(255, 255, 255, 0.5);
-          animation: haloPulse 2.6s ease-in-out infinite;
-        }
-
-        @keyframes haloPulse {
-
-          0%,
-          100% {
-            opacity: 0.7;
-            transform: scale(1);
-          }
-
-          50% {
-            opacity: 1;
-            transform: scale(1.2);
-          }
-        }
-      }
-    }
-
-    .message-content {
-      font-size: 15px;
-      color: #2f2f2f;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      word-break: break-word;
-      margin: 0;
-      padding-bottom: 2px;
-      letter-spacing: 0.2px;
-    }
-
-
+    padding: 1rem;
+    border-radius: 12px;
   }
 
-  /* 动画：消息列表进入的淡入上移（保留你原有的 transition-group 名称） */
-  .msg-enter-from,
-  .msg-leave-to {
-    opacity: 0;
-    transform: translateY(12px);
-    filter: blur(0.6px);
+  .name-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
   }
 
-  .msg-enter-active,
-  .msg-leave-active {
-    transition: all 360ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  .message-name {
+    font-size: 1rem;
   }
 
-  /* ---------- 固定底部输入区（更椿的按钮与输入） ---------- */
+  .message-time {
+    font-size: 0.8rem;
+  }
+
+  .message-content {
+    font-size: 0.95rem;
+  }
+  .loading-more,
+  .no-more {
+    padding: 1.5rem 0;
+    font-size: 0.85rem;
+  }
   .message-form {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 18px;
-    width: calc(100% - 32px);
-    max-width: 960px;
-    background: linear-gradient(180deg, #fdd867 0%, #fff7dd 100%);
-    padding: 14px;
-    border-radius: 14px;
-    display: flex;
+    padding: 1rem;
+    bottom: 40px;
+  }
+
+  #mb-name,
+  #mb-content {
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .form-row {
     flex-direction: column;
-    gap: 10px;
-    box-shadow: 0 10px 30px rgba(59, 123, 224, 0.14);
-    z-index: 6;
-    border: none;
-
-    input,
-    textarea {
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(230, 220, 225, 0.7);
-      font-size: 14px;
-      outline: none;
-      transition: box-shadow 0.18s, border-color 0.18s;
-      background: linear-gradient(180deg,
-          rgba(255, 255, 255, 0.98),
-          rgba(250, 248, 249, 0.98));
-      box-shadow: inset 0 -4px 10px rgba(234, 217, 227, 0.04);
-      color: #333;
-      resize: none;
-    }
-
-    input:focus,
-    textarea:focus {
-      border-color: rgba(158, 24, 32, 0.16);
-      box-shadow: 0 8px 26px rgba(210, 140, 150, 0.06);
-    }
-
-    textarea {
-      min-height: 64px;
-      max-height: 220px;
-      line-height: 1.6;
-    }
-
-    .form-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-
-      .hint {
-        color: #7b6a6f;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        kbd {
-          background: rgba(245, 245, 245, 0.9);
-          border-radius: 6px;
-          padding: 2px 6px;
-          border: 1px solid rgba(220, 220, 220, 0.9);
-          font-size: 12px;
-          box-shadow: inset 0 -2px 4px rgba(200, 200, 200, 0.03);
-        }
-      }
-
-      button {
-        padding: 10px 18px;
-        background: linear-gradient(180deg, #c4e4ff 0%, #60aceb 100%);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 800;
-        box-shadow: 0 10px 30px rgba(184, 58, 74, 0.14);
-        transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s;
-      }
-
-      button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-        background: linear-gradient(180deg, #f0f8ff 0%, #c4e4ff 100%);
-        color: #fff;
-      }
-
-      button:not(:disabled):active {
-        transform: translateY(1px);
-      }
-    }
+    align-items: stretch;
   }
 
-  /* ---------- 响应式：移动端收敛 ---------- */
-  @media (max-width: 980px) {
-    padding-top: 90px;
-
-    .board-header {
-      left: 12px;
-      transform: none;
-      width: calc(100% - 24px);
-    }
-
-    .message-list {
-      padding: 18px 12px 220px;
-
-      .message-list-inner {
-        gap: 12px;
-      }
-    }
-
-    .message-card {
-      width: calc(100% - 28px);
-      border-radius: 12px;
-      padding: 12px;
-
-      &::before {
-        left: 0;
-        top: 8px;
-        bottom: 8px;
-        width: 6px;
-      }
-
-      .name-avatar {
-        width: 44px;
-        height: 44px;
-      }
-    }
-
-    .message-form {
-      left: 12px;
-      transform: none;
-      width: calc(100% - 24px);
-      bottom: 12px;
-      padding: 12px;
-    }
+  .hint {
+    justify-content: center;
   }
 
+  button {
+    width: 100%;
+    padding: 0.9rem;
+  }
+}
 
+@media (max-width: 480px) {
+  .message-card {
+    margin: 0 0.5rem;
+  }
 
-  /* sr-only */
-  .sr-only {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
+  .left-meta {
+    gap: 0.8rem;
+  }
+
+  .meta-actions .halo-star {
+    font-size: 1rem;
   }
 }
 </style>

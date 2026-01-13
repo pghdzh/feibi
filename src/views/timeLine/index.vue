@@ -1,618 +1,2260 @@
 <template>
-  <div class="megumi-page" aria-live="polite">
-    <main class="container" ref="mainContainer">
-      <!-- HERO -->
-      <header class="hero" role="banner">
+  <div class="phoebe-character-page">
+    <!-- 背景装饰元素 -->
+    <div class="bg-ornament bg-ornament-1"></div>
+    <div class="bg-ornament bg-ornament-2"></div>
+    <div class="bg-ornament bg-ornament-3"></div>
 
-
-        <div class="left-col">
-          <button class="avatar-card">
-            <picture class="avatar-wrap">
-              <img src="@/assets/images1/slty (5).webp" class="avatar" loading="lazy" decoding="async" />
-            </picture>
-
-
-          </button>
-
-
+    <main class="character-container">
+      <!-- 英雄区域 - 角色概览 -->
+      <section class="character-hero">
+        <div class="hero-avatar-section">
+          <div class="avatar-frame">
+            <div class="avatar-glow"></div>
+            <img
+              src="@/assets/images1/slty (5).webp"
+              class="character-avatar"
+              alt="菲比角色立绘"
+              loading="lazy"
+            />
+            <div class="avatar-decoration">
+              <div class="decoration-line"></div>
+              <div class="decoration-star">✦</div>
+              <div class="decoration-line"></div>
+            </div>
+          </div>
+          <div class="avatar-meta">
+            <div class="meta-badge resonance-badge">共鸣能力：圣祈凝辉</div>
+            <div class="meta-badge faction-badge">音感仪 · 衍射属性</div>
+          </div>
         </div>
 
-        <div class="right-col" ref="metaCard">
-          <div class="hero-panel">
-            <h1 class="name">菲比 <span class="jp">（ 隐海修会的教士）</span></h1>
+        <div class="hero-info-section">
+          <div class="character-title-group">
+            <h1 class="character-name">
+              <span class="name-main">菲比</span>
+              <span class="name-sub">Phoebe</span>
+            </h1>
+            <div class="character-title">圣祈凝辉 · 隐海修会教士</div>
+          </div>
 
-            <p class="subtitle">她是光明的回响，亦是温柔的信仰。</p>
+          <div class="character-quote">
+            <div class="quote-icon left">❝</div>
+            <p class="quote-text">她是光明的回响，亦是温柔的信仰。</p>
+            <div class="quote-icon right">❞</div>
+          </div>
 
-            <p class="lead">
-              友善虔诚、稳重得体。 恪守教义、自我约束的圣职者，仍然存有着为所爱之物欢欣雀跃的真挚之心。
+          <div class="character-description">
+            <p>
+              友善虔诚、稳重得体。恪守教义、自我约束的圣职者，仍然存有着为所爱之物欢欣雀跃的真挚之心。
+            </p>
+            <p>
+              其共鸣能力"风声流息"可将光化为实体，这份力量被认为来源于其坚定的信仰。因与声骸的亲近关系，被调往圣事部任职。
             </p>
           </div>
-        </div>
-      </header>
 
-      <!-- 其余内容保持原样 -->
-      <section id="personality" class="card personality">
-        <div class="card-head">
-          <h2>核心机制</h2>
-        </div>
-
-        <ul class="traits">
-          <li>
-            菲比可以为敌人附加大量的debuff【光噪效应】，会根据层数给敌人持续伤害
-          </li>
-          <li>
-            【福音】：血条上方的特殊能量条，3次常态攻击或闪避反击后，可以消耗【福音】施放一次特殊重击·星辉。星辉会在赦罪状态下打出更高伤害，在告解状态下附加5层【光噪效应】。
-          </li>
-          <li>
-            【祈愿】：血条上方，【福音】下方的黄色能量条，每24秒可以充满一次，随后菲比可以选择重击进入赦罪状态（输出模式），或者长按E进入告解状态（辅助模式）。注意：【福音】未消耗完，无法进入上述状态。
-          </li>
-          <li>
-            【镜之环】：菲比的共鸣技能，不存在【镜之环】时，短按E会在敌人脚下召唤【镜之环】并造成停滞和牵引，长按E会在自身脚下召唤【镜之环】。存在【镜之环】时，短按E菲比会传送进【镜之环】中。菲比在【镜之环】外，敌人在内时会造成额外伤害。菲比在【镜之环】内，会有更高的额外伤害。
-          </li>
-
-        </ul>
-
-        <blockquote class="quote">
-          主C打法：变奏入场-Z-E-Q-R-（A-A-A-Z）* 4
-          <br>
-          辅助打法：长按E-R-（A-A-A-Z）* 2-Q
-          <br />(普攻--A，重击--Z，共鸣技能--E，共鸣解放--R，声骸--Q)
-        </blockquote>
-      </section>
-
-      <section id="overview" class="card overview">
-        <div class="card-head">
-          <h2>配队</h2>
-        </div>
-
-        <div class="grid two-col">
-          <div class="team">
-            <h3>赞菲守</h3>
-            <ul>
-              <li><img src="@/assets/avatar/feibi.png" alt="" /></li>
-              <li><img src="@/assets/avatar/zan_ni.png" alt="" /></li>
-              <li><img src="@/assets/avatar/shouanren.webp" alt="" /></li>
-            </ul>
-          </div>
-
-          <div class="team">
-            <h3>赞菲光</h3>
-            <ul>
-              <li><img src="@/assets/avatar/feibi.png" alt="" /></li>
-              <li><img src="@/assets/avatar/zan_ni.png" alt="" /></li>
-              <li><img src="@/assets/avatar/man.png" alt="" /></li>
-            </ul>
-          </div>
-
-          <div class="team">
-            <h3>赞菲光</h3>
-            <ul>
-              <li><img src="@/assets/avatar/feibi.png" alt="" /></li>
-              <li><img src="@/assets/avatar/zan_ni.png" alt="" /></li>
-              <li><img src="@/assets/avatar/woman.png" alt="" /></li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="timeline" class="card timeline" aria-labelledby="timeline-heading">
-        <div class="card-head">
-          <h2 id="timeline-heading">共鸣链详解 · 提升</h2>
-        </div>
-
-        <div class="tl-wrap" role="list">
-          <!-- 中心线（视觉） -->
-          <div class="vl" aria-hidden="true"></div>
-
-          <ol class="tl-list">
-            <li v-for="(ev, i) in timeline" :key="i" class="tl-item" role="listitem" tabindex="0">
-              <div class="tl-card">
-                <h3 class="tl-title">
-                  {{ ev.title }}
-                  <span class="tl-meta" aria-hidden="true">(第 {{ i + 1 }} 链 )</span>
-                </h3>
-                <p class="tl-desc">{{ ev.desc }}</p>
+          <div class="character-traits">
+            <div class="trait">
+              <div class="trait-icon">✦</div>
+              <div class="trait-content">
+                <div class="trait-title">光之共鸣者</div>
+                <div class="trait-desc">能将光化为实体棱晶，折射希望</div>
               </div>
-            </li>
-          </ol>
+            </div>
+            <div class="trait">
+              <div class="trait-icon">✦</div>
+              <div class="trait-content">
+                <div class="trait-title">声骸亲和</div>
+                <div class="trait-desc">与神使（声骸）有特殊亲近关系</div>
+              </div>
+            </div>
+            <div class="trait">
+              <div class="trait-icon">✦</div>
+              <div class="trait-content">
+                <div class="trait-title">隐海教士</div>
+                <div class="trait-desc">恪守教义，传递安宁与希望</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 角色能力模块 -->
+      <section class="character-abilities">
+        <div class="section-header">
+          <h2 class="section-title">核心机制解析</h2>
+          <div class="section-subtitle">光之共鸣 · 双态战斗系统</div>
+        </div>
+
+        <div class="abilities-grid">
+          <!-- 核心机制总览 -->
+          <div class="ability-card ability-overview">
+            <div class="ability-card-header">
+              <div class="ability-icon">⚙️</div>
+              <h3 class="ability-title">机制总览</h3>
+            </div>
+            <div class="ability-content">
+              <p>
+                菲比的核心战斗围绕<strong>【镜之环】</strong>与<strong>双形态切换</strong>展开，通过消耗【福音】与【祈愿】资源，在<strong>赦罪（输出）</strong>与<strong>告解（辅助）</strong>状态间转换，实现多功能战斗风格。
+              </p>
+              <div class="mechanic-flow">
+                <div class="flow-step">
+                  <div class="flow-node">常态战斗</div>
+                  <div class="flow-arrow">→</div>
+                  <div class="flow-node">积攒【福音】</div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-node">【祈愿】充满</div>
+                  <div class="flow-arrow">↓</div>
+                  <div class="flow-options">
+                    <div class="flow-option">
+                      <div class="flow-node option-damage">赦罪状态</div>
+                      <div class="flow-desc">输出模式</div>
+                    </div>
+                    <div class="flow-or">或</div>
+                    <div class="flow-option">
+                      <div class="flow-node option-support">告解状态</div>
+                      <div class="flow-desc">辅助模式</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 核心技能 -->
+          <div class="ability-card ability-skills">
+            <div class="ability-card-header">
+              <div class="ability-icon">✨</div>
+              <h3 class="ability-title">核心技能</h3>
+            </div>
+            <div class="ability-content">
+              <div class="skill-list">
+                <div class="skill-item">
+                  <div class="skill-name">镜之环</div>
+                  <div class="skill-desc">
+                    召唤光之棱镜，造成停滞与牵引。菲比与敌人在环内外的位置关系影响伤害。
+                  </div>
+                </div>
+                <div class="skill-item">
+                  <div class="skill-name">光噪效应</div>
+                  <div class="skill-desc">
+                    核心Debuff，层数提供持续伤害，告解状态可快速叠加。
+                  </div>
+                </div>
+                <div class="skill-item">
+                  <div class="skill-name">星辉重击</div>
+                  <div class="skill-desc">
+                    消耗【福音】释放，赦罪状态伤害提升，告解状态附加光噪效应。
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 输出循环 -->
+          <div class="ability-card ability-rotation">
+            <div class="ability-card-header">
+              <div class="ability-icon">🔄</div>
+              <h3 class="ability-title">输出循环</h3>
+            </div>
+            <div class="ability-content">
+              <div class="rotation-options">
+                <div class="rotation-option">
+                  <h4 class="rotation-title">赦罪输出流</h4>
+                  <div class="rotation-sequence">
+                    <span class="skill-key">变奏</span> →
+                    <span class="skill-key">重击</span> →
+                    <span class="skill-key">E</span> →
+                    <span class="skill-key">Q</span> →
+                    <span class="skill-key">R</span> →
+                    <span class="skill-cycle">(AAA重击)×4</span>
+                  </div>
+                  <div class="rotation-desc">最大化爆发伤害，适合主力输出</div>
+                </div>
+                <div class="rotation-divider"></div>
+                <div class="rotation-option">
+                  <h4 class="rotation-title">告解辅助流</h4>
+                  <div class="rotation-sequence">
+                    <span class="skill-key">长按E</span> →
+                    <span class="skill-key">R</span> →
+                    <span class="skill-cycle">(AAA重击)×2</span> →
+                    <span class="skill-key">Q</span>
+                  </div>
+                  <div class="rotation-desc">快速叠加光噪效应，团队增益</div>
+                </div>
+              </div>
+              <div class="skill-legend">
+                <div class="legend-item">
+                  A=普攻 | 重击=重击 | E=共鸣技能 | R=共鸣解放 | Q=声骸技能
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 双状态对比表 -->
+        <div class="state-comparison">
+          <h3 class="comparison-title">双状态效果对比</h3>
+          <div class="comparison-table">
+            <div class="table-header">
+              <div class="table-cell">状态特性</div>
+              <div class="table-cell state-damage">赦罪状态</div>
+              <div class="table-cell state-support">告解状态</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell">触发方式</div>
+              <div class="table-cell">【祈愿】满后重击</div>
+              <div class="table-cell">【祈愿】满后长按E</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell">核心效果</div>
+              <div class="table-cell">大幅提升星辉与共鸣解放伤害</div>
+              <div class="table-cell">星辉快速附加光噪效应，团队辅助</div>
+            </div>
+            <div class="table-row">
+              <div class="table-cell">定位</div>
+              <div class="table-cell">主力爆发输出</div>
+              <div class="table-cell">Debuff辅助，团队增益</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 角色故事与记忆 -->
+      <section class="character-memories">
+        <div class="section-header">
+          <h2 class="section-title">记忆之物</h2>
+          <div class="section-subtitle">承载过往的珍贵碎片</div>
+        </div>
+
+        <div class="memories-grid">
+          <div class="memory-card">
+            <div class="memory-image">
+              <img src="./img/item1.png" alt="航钟相片盒" loading="lazy" />
+              <div class="memory-overlay">
+                <div class="overlay-text">凝固的时光</div>
+              </div>
+            </div>
+            <div class="memory-content">
+              <h3 class="memory-title">航钟相片盒</h3>
+              <p class="memory-desc">
+                菲比随身携带的相片盒，由一个早已停转的航钟改造而成，里面装着一张全家福。它曾经在一次海难中沉入了海底，经过热心朋友们的不断寻找，最终又重新回到了菲比的手中。<br />
+                “那摇曳着流逝的时光中……美丽的浪花中，还有灯光里，都有我要和你述说的话语，一遍又一遍。”
+              </p>
+            </div>
+          </div>
+
+          <div class="memory-card">
+            <div class="memory-image">
+              <img src="./img/item2.png" alt="青色鸟儿工艺品" loading="lazy" />
+              <div class="memory-overlay">
+                <div class="overlay-text">信使之约</div>
+              </div>
+            </div>
+            <div class="memory-content">
+              <h3 class="memory-title">“信使”</h3>
+              <p class="memory-desc">
+                一个产自大洋彼岸的工艺品，在变卖一空的家产里，菲比只留下了这个。<br />
+                在那些曾以为会永远讲述下去的睡前故事中，长着青色羽翼的鸟儿是神的信使，它有跨越风浪的力量，会将幸福带往那个在每晚忍耐着寂寞，乖乖入眠的小女孩身边。
+              </p>
+            </div>
+          </div>
+
+          <div class="memory-card">
+            <div class="memory-image">
+              <img src="./img/item3.png" alt="旧版隐海圣典" loading="lazy" />
+              <div class="memory-overlay">
+                <div class="overlay-text">遥远的愿景</div>
+              </div>
+            </div>
+            <div class="memory-content">
+              <h3 class="memory-title">手装圣典</h3>
+              <p class="memory-desc">
+                陈旧褪色的旧版《隐海圣典》，由一位温柔而虔诚的母亲手工装订。一名合格、尽责、虔诚的教士应熟读圣典中的所有内容，谨记岁主的箴言。菲比始终恪守着心中的教义，而其实比起海洋，菲比更喜欢天空的颜色。<br />
+                “圣典曾言，苦难令我们更接近神，可我的孩子，我仍希望你的一生平安幸福。”
+              </p>
+            </div>
+          </div>
+
+          <div class="memory-card">
+            <div class="memory-image">
+              <img src="./img/food.png" alt="披萨" loading="lazy" />
+              <div class="memory-overlay">
+                <div class="overlay-text">一小块披萨</div>
+              </div>
+            </div>
+            <div class="memory-content">
+              <h3 class="memory-title">分享之爱</h3>
+              <p class="memory-desc">
+                从一张无比巨大的披萨上切下的其中一块，芝士满溢，馅多料足，每个孩子都能在上面找到爱吃的一部分，是每隔一个月才能一起享用的美味。<br />
+                嬷嬷们曾说，信仰来源于爱，爱产生分享，而分享又将爱回报。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 共鸣链系统 -->
+      <section class="resonance-chain">
+        <div class="section-header">
+          <h2 class="section-title">共鸣链详解</h2>
+          <div class="section-subtitle">光之共鸣的深化路径</div>
+        </div>
+
+        <div class="chain-container">
+          <div class="chain-track"></div>
+
+          <div class="chain-nodes">
+            <div
+              v-for="(node, index) in resonanceChain"
+              :key="index"
+              class="chain-node"
+              :style="{ '--node-index': index }"
+            >
+              <div class="node-marker">
+                <div class="marker-inner">{{ index + 1 }}</div>
+              </div>
+              <div class="node-content">
+                <div class="node-title">
+                  第{{ index + 1 }}链 · {{ node.title }}
+                </div>
+                <div class="node-description">{{ node.description }}</div>
+                <div class="node-effect">
+                  <span class="effect-label">主要效果：</span>
+                  <span class="effect-text">{{ node.effect }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 角色故事 -->
+      <section class="character-stories" ref="storyRef">
+        <div class="section-header">
+          <h2 class="section-title">菲比纪事</h2>
+          <div class="section-subtitle">光阴中的温暖篇章</div>
+        </div>
+
+        <div class="stories-container">
+          <div class="stories-tabs">
+            <button
+              v-for="(story, index) in stories"
+              :key="story.id"
+              class="story-tab"
+              :class="{ active: currentStory === index }"
+              @click="selectStory(index)"
+            >
+              <span class="tab-index">{{ index + 1 }}</span>
+              <span class="tab-title">{{ story.title }}</span>
+            </button>
+          </div>
+
+          <div class="story-viewer">
+            <transition name="story-fade" mode="out-in">
+              <article :key="currentStory" class="story-content">
+                <h3 class="story-current-title">
+                  {{ stories[currentStory].title }}
+                </h3>
+                <div class="story-text">
+                  {{ stories[currentStory].content }}
+                </div>
+              </article>
+            </transition>
+
+            <div class="story-controls">
+              <button
+                class="control-btn prev-btn"
+                @click="prevStory"
+                aria-label="上一篇故事"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                  <path
+                    d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+              <div class="story-counter">
+                <span class="current-story">{{ currentStory + 1 }}</span>
+                <span class="counter-divider">/</span>
+                <span class="total-stories">{{ stories.length }}</span>
+              </div>
+              <button
+                class="control-btn next-btn"
+                @click="nextStory"
+                aria-label="下一篇故事"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                  <path
+                    d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 角色背景 -->
+      <section class="character-background">
+        <div class="section-header">
+          <h2 class="section-title">共鸣档案</h2>
+          <div class="section-subtitle">摘自隐海孤儿院致修会的推荐信</div>
+        </div>
+
+        <div class="background-content">
+          <div class="background-text">
+            <p>
+              在那时，我看到了她左腿上侧亮起的声痕，我想，这一定是英白拉多的赐福。
+            </p>
+            <p>
+              ……她的共鸣能力能够将光化作实体，以不同形态的棱晶折射，即使是在因暴风雨失去照明的黑夜，她仍能让每个房间都充满柔和明亮的光。那光如此令人心安，在至暗时刻仍能传递安宁与希望——恰如《隐海修记》中的箴言，光明一定本就存在于她的心中，在奉献中取之不竭……
+            </p>
+            <p>*本档案已由孤儿院移交至隐海修会档案馆。</p>
+            <p>
+              我们有理由相信，菲比见习教士无与伦比的共鸣能力，正是来源自她的信仰之坚定。
+            </p>
+            <p>
+              从「神使」（声骸）对她的亲近也可见一斑，这一现象也加强了部分信众对菲比的信任，事实上，菲比见习教士在救济事务中的活跃表现早已使她获得了认可，因此我们一致同意她通过见习期，成为正式教士。
+            </p>
+            <p>
+              但修会内部亦有人认为，与声骸过于亲近违背了修会的教义，神使的赐福与岁主的爱等同，应平等地垂怜每一个人，不能有任何偏颇，而过于亲近神使也会带来隐患，故而不建议菲比在驱役所任职，将她调往圣事部最为稳妥……
+            </p>
+          </div>
+          <div class="background-seal">
+            <div class="seal-content">
+              <div class="seal-icon">✧</div>
+              <div class="seal-text">隐海修会档案室</div>
+              <div class="seal-date">核准日期：星历●●●●年</div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
+
+    <!-- 页脚 -->
+    <footer class="character-footer">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <div class="logo-icon">✦</div>
+          <div class="logo-text">菲比 · 圣祈凝辉</div>
+        </div>
+        <div class="footer-quote">
+          <p>愿那束你仰望的光，终有一日从你心中升起</p>
+        </div>
+        <div class="footer-copyright">© 2026 鸣潮 · 菲比角色档案</div>
+      </div>
+    </footer>
+    <div class="floating-chibis">
+      <img
+        v-for="(pet, i) in chibiList"
+        :key="i"
+        :src="pet.src"
+        :style="{ top: pet.top + 'px', left: pet.left + 'px' }"
+        class="chibi-img"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-/* 你的脚本逻辑保持不变（我这里保留你原始的 onMounted/gsap/timeline 等） */
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-gsap.registerPlugin(ScrollTrigger);
 
-const timeline = ref([
+// 共鸣链数据
+const resonanceChain = ref([
   {
-    time: "7.58%",
     title: "暖灯与枕边的祝愿",
-    desc: `赦罪状态下共鸣解放启明之誓愿伤害倍率提升效果从255%变为480%。
+    description: "增强共鸣解放威力",
+    effect: `赦罪状态下共鸣解放启明之誓愿伤害倍率提升效果从255%变为480%。
 告解状态下共鸣解放启明之誓愿伤害倍率提升90%，并且附加【光噪效应】层数提升至目标可附加层数的上限。`,
   },
   {
-    time: "26.3%",
     title: "泪水中飘摇的孤船",
-    desc: `赦罪状态下，延奏技能对拥有【光噪效应】的目标伤害加深120%。
+    description: "强化延奏技能与默祷效果",
+    effect: `赦罪状态下，延奏技能对拥有【光噪效应】的目标伤害加深120%。
 告解状态下，默祷的【光噪效应】伤害加深效果额外提升120%。`,
   },
   {
-    time: "18.4%",
     title: "雏菊编织花环与梦",
-    desc: `赦罪状态下，重击星辉伤害倍率提升91%。
+    description: "提升星辉重击伤害",
+    effect: `赦罪状态下，重击星辉伤害倍率提升91%。
 告解状态下，重击星辉伤害倍率提升249%。`,
   },
   {
-    time: "6.3%",
     title: "再次敲响振翅的钟声",
-    desc: `普攻、普攻夏弥尔之星、闪避反击、夏弥尔之星·闪避反击命中目标时，目标衍射伤害抗性降低10%，持续30秒。`,
+    description: "降低目标衍射抗性",
+    effect: `普攻、普攻夏弥尔之星、闪避反击、夏弥尔之星·闪避反击命中目标时，目标衍射伤害抗性降低10%，持续30秒。`,
   },
   {
-    time: "8.5%",
     title: "向遥远光辉虔声祈祷",
-    desc: `施放变奏技能金色恩典时，菲比的衍射伤害加成提升12%，持续15秒。`,
+    description: "增强变奏技能效果",
+    effect: `施放变奏技能金色恩典时，菲比的衍射伤害加成提升12%，持续15秒。`,
   },
   {
-    time: "87.5%",
     title: "于静寂窗边啁啾歌唱",
-    desc: `【镜之环】的停滞效果增加2秒。【镜之环】持续期间，对每个进入【镜之环】的目标施加停滞效果；同一个【镜之环】最多可对12个目标施加停滞效果，且对每个目标只能施加一次。
+    description: "强化镜之环效果",
+    effect: `【镜之环】的停滞效果增加2秒。【镜之环】持续期间，对每个进入【镜之环】的目标施加停滞效果；同一个【镜之环】最多可对12个目标施加停滞效果，且对每个目标只能施加一次。
 赦罪状态、告解状态下，菲比施放共鸣技能召唤【镜之环】时，攻击提升10%，持续20秒，同时向【镜之环】位置附带一次重击星辉。此次重击星辉不消耗【福音】，不视为施放重击。`,
   },
 ]);
 
-const reducedMotion =
-  window.matchMedia &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// 故事数据
+const stories = ref([
+  {
+    id: "1",
+    title: "教士的日常",
+    content: `一个寻常的午后，拉古那宽阔的街道上人来人往，看上去比往年更加热闹。
 
-onMounted(() => {
-  if (!reducedMotion) {
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.from(".avatar-card", {
-      duration: 0.8,
-      y: 18,
-      opacity: 0,
-      scale: 0.99,
-    }).from(
-      ".right-col > .hero-panel .name",
-      { duration: 0.9, x: 24, opacity: 0 },
-      "-=0.45"
+阔别已久的狂欢节即将重新举办——这个消息早已传遍了拉古那的大街小巷，飞向海的彼岸，这几天城中已经出现了不少异国旅客的身影，即使还没到晚餐时间，玛格烈特餐厅仍然坐着不少慕名而来的食客。
+
+拉古那的美酒与它的美景一样令人流连忘返，蜜露果酒能够将人带入美梦，而过于沉醉偶尔也会导致意外。
+
+起初是一点小小的口味上的分歧，随后演化成一场热火朝天的争论。
+
+或许是厌倦了压抑，或许是令人昏昏欲睡的午后正需要一些振奋精神的娱乐，更多的人聚集起来，加入了这场争论。
+
+——争论愈演愈烈，最终变为了一场的决斗。
+
+一时间，餐厅仿佛成为了戏剧现场，披萨与蛋糕齐飞，海鲜从盘子中转移到路人的脸上，围观群众纷纷仓皇躲避，又忍不住远远回头关注战况。
+
+“客人！别这样啾，盘子要碎了啾，请放下餐具，很危险啾——！！”店主尾巴毛都炸了起来，拿着披萨铲急的上蹿下跳，却不敢靠近混乱的中心。
+
+就在这时，人群中窜出一个娇小的身影。
+
+“——请冷静一下！”
+
+高高抬起的手杖在空中挽出优雅的圆弧，破空落下的金色鸟儿仿佛有着千钧的力量，但最终只是在额头轻点一下，如同蜻蜓点过水面荡起圈圈涟漪。
+
+上一秒还在暴跳如雷的两人瞬间平静下来，带着受到圣光洗礼般的静谧微笑直直倒在桌子上，齐声打起鼾来。
+
+ 
+
+“请大家不用担心，他们只是睡着了。“
+
+那位娇小的金发教士收起手杖，正色道。“但根据修会的管理条例，破坏公共秩序的人需要接受相应的处罚。”
+
+“节制之美德是岁主赐予我们的礼物，也正因如此美食和蜜露才会更加香甜……希望这个小插曲不会影响大家继续享受在拉古那度过的时光。”
+
+金发教士的笑容温柔和煦，而四周鸦雀无声。
+
+ 
+
+在近卫所的教士们带着卫冕节使赶到现场的时候，这场骚乱已经结束了。
+
+“对对对，我亲眼看到她把那两个壮汉一杖子敲蒙了啊！然后不知道从哪窜出来一个超大个的布偶，把他们都给搬走了！她看上去年纪不大，真是人不可貌相……”
+
+留在餐厅帮忙收拾残局的客人手舞足蹈的描述着。
+
+为首的教士拿出终端正打算记录，却发现已经有一则报告发送到了修会，上面详细地记录着事情的起因经过，以及被带走的二人的安置情况。
+
+“……那个，这样就没事了吗？”
+
+“当然。”教士收起终端，笃定地回答。
+
+“交给菲比教士吧，她最有经验。”`,
+  },
+  {
+    id: "2",
+    title: "家",
+    content: `尊敬的克莱蒙特先生：
+
+很抱歉许久未联系您，这段时间事务繁忙，我有太多问题需要处理。我必须怀着无比沉痛的心情告诉您这个噩耗：我们的合作商——马里诺夫妇在前往新联邦途中遭遇残象潮袭击，已不幸遇难，愿他们在岁主的指引下获得安宁。
+
+……有关那批沉海商货的款项，按照之前签定的合约，我已经开始代为变卖马里诺家的剩余财产……这实在是无奈之举，您知道，我们几乎为那桩生意付出了一切，如今无以为继，只能这样填补空缺……
+
+您应该记得菲比——那个失去了双亲的可怜女孩，她现在无处可去，而我常年外出经商，实在力有不逮，听闻您与马里诺家的远亲颇有私交，希望您能收留她……
+
+ 
+
+我收起信，确认地址无误，再次敲响了房门。
+
+接连的敲门声已经引得邻居侧目，而门内仍然毫无动静，那个小小的女孩安静地在我身后低头站着，似乎已经习惯了这样的状况。
+
+“他们前段时间全家去度假了。”路过的邻居状似无意般提起，“可能很久之后才会回来。”
+
+“我知道了，谢谢您……我们走吧，菲比。”
+
+离开时，我的余光瞟到侧窗留着一条缝的窗帘轻轻颤动了一下，我握紧菲比的手，带着她离开这片富丽堂皇的街区。
+
+拉古那城很大，但找到一个归宿却很难，我已经记不清这是这是我敲过的第几扇门，得到的第几次拒绝。
+
+在孤儿院任职多年，我早已习惯各式各样的拒绝，但我不能让菲比经历这些，她还太小，她需要的是一个能够抚平伤痛的，温暖稳定的家庭环境。
+
+“抱歉……我们很同情她的遭遇，但领养一个孩子可不是只添一副餐具的事情……这是我们的一点心意，你们再去别家问问吧。”
+
+“委托信？咳……我不记得有收到过这种信件。对了，她不是已经被孤儿院收留了吗？和很多同龄人同吃同住，这对孩子来说也是挺好的成长环境。”
+
+“……听说马里诺家的欠款至今没有结清，我们可不想被债主找上门，还请你理解。”
+
+……
+
+“伊莎贝拉嬷嬷……不要难过。”
+
+一个冰淇淋被高高举在面前，我的身边不知何时多了一堆小声骸，它们拿着分发给旅客的冰淇淋和甜点，挨挨挤挤的簇拥在我的——或者说，是菲比的身边。
+
+“我知道叔叔阿姨们都很忙，和爸爸妈妈一样，总是很久才回一次家。”
+
+我怔怔地接过有些融化的冰淇淋，没有想到会被这样小的孩子开口安慰。
+
+善良的马里诺夫妇曾资助孤儿院在黑潮的灾难中度过难关，我却连为他们的女儿找个值得托付的养父母都做不到。
+
+她本应在父母温暖的臂弯里自由地欢笑，在坚实的屋檐下过着安稳幸福的生活。
+
+“没事的，我可以……和大家住在一起，和大家在一起，很开心。”
+
+见我许久没有说话，年幼的女孩看着我，露出了安静的，在我看来近乎抚慰的笑容，我的心随之颤抖。
+
+“大家不会分开，对吗？教士们都说，岁主在我们身边，将我们联系在一起，不致分离。”
+
+她一字一句地念诵着，我最终只是忍住眼角的湿意，将她抱在怀中。
+
+“好……那我们回去，回我们的家。”`,
+  },
+  {
+    id: "3",
+    title: "无数个深夜",
+    content: `深夜的暴风雨像是要倾洒尽拉古那全部的水，闪电在薄被上投下窗柩的形状，令交错的暗影压在蜷缩着的女孩身上。
+
+菲比没有入睡，只要闭上眼睛，她便会看到翻滚着惊涛骇浪的海面，其中有一只永远无法归家的孤船，她在与这艘船一起下沉。
+
+曾经在这样的夜晚，爸爸会将那个印着岁主像的相片盒放在她的枕下，告诉她岁主会在梦中带领她穿越风暴，抵达安全的港湾；妈妈会在她的床边放一束雏菊，为她讲述睡前故事，她说岁主会为勇敢而善良的孩子送来神使，护佑她平安幸福。
+
+而现在，教士们会摸着她的头，告诉她还有和她境况相似的孩子们，每个黎那汐塔人都要淌过苦难，才能在人生的尽头获得岁主的宽恕。
+
+越过教士的臂弯，她第一次看到了那样宏伟的岁主圣像，那巨大的鱼尾令她感到一瞬恐慌，而温柔的教士们轻轻扶住她的肩膀，念诵祷文的柔和声音令她逐渐平静。
+
+她被领进温暖明亮的房间，温柔的教士们待她很好，但她们一定更加喜欢不会带来麻烦的孩子。
+
+菲比努力回忆着母亲为她哼唱的歌谣，让它在脑海中回荡，借此盖过窗外暴雨的呼号。
+
+而不停歇的雷雨声仍然将她拉回那个黑夜。
+
+ 
+
+她偷偷溜上远航的商船，透过货仓的舷窗中看着船驶向远方的水平线——爸爸妈妈回来时，他们的船帆就是从那个方向出现，她不想再等着爸爸妈妈来接她了，她要勇敢地去找他们。
+
+而大海并不像母亲讲述的故事里那样温柔，她听到甲板上步伐匆忙，人们的喧闹逐渐变为此起彼伏的惊叫，船只被风暴吞没，又被海浪高高抛起。
+
+她哭着呼唤爸爸妈妈，而汹涌的海浪告诉她，她的父母早已不会归来。
+
+她被冰冷的海水淹没，逐渐模糊的视野中，她看到父亲留给自己的相片盒沉入漆黑的海底，继而消失不见。
+
+再次醒来时，她浑身湿透地躺在岸边，腿上的声痕闪烁着光芒，找到她的教士们说，从没有人能从那样危险的大海中生还，更何况是一个年纪那么小的女孩，这一定是岁主的赐福。
+
+可菲比依稀记得似乎有什么救了她，带着无比温柔的气息，像一缕和风托着她浮上海面，将她轻轻放在了岸边，告诉她……
+
+不要害怕，我在这里。
+
+有什么将菲比从深沉的梦境中拉回，她感到床微微一重，似乎是一个毛绒绒的东西靠了上来，带着雨夜的潮湿和雏菊的香气。
+
+随后菲比看到了一双纽扣眼睛和柔软的布耳朵——是她白天在拂风水畔遇到的流浪声骸，那时的她解下了缠绕在声骸身上的风筝线，给它取名叫贝尼，贝尼带她认识了许多新朋友，陪着她在山坡上看云，为她擦去眼角的泪痕，将好看的花环戴在她的头上。
+
+菲比，不要难过。
+
+布偶的身体温暖而柔软，恍惚间令她感受到了有些熟悉的气息，风的气息。
+
+她将头埋入它毛绒绒的肚皮，缓缓沉入梦乡。`,
+  },
+  {
+    id: "4",
+    title: "清晨依旧来临",
+    content: `醒来时，菲比感觉眼角似乎还残留着一丝湿意。
+
+“岁主在上，今天也要打起精神来！“
+
+她从床上跳起来，熟练地抻平床单，这个陪伴着她成长的小床仍然记忆中熟悉的模样。菲比拍了拍脸颊驱散清晨的困意，一头扎进了新一天的工作计划中。
+
+孤儿院要举办一个小小的庆典，她这次和前辈一起来帮忙筹备，这是她成为见习教士之后第一次回到这里，昨天和兄弟姐妹们说了很久的话，也许就是因为这样才会梦到以前的事情。
+
+所有人都说菲比看上去更像个独当一面的大人了，她不能辜负大家的期望。
+
+晨祷结束，菲比开始准备庆典需要的物品。教士的修习生活忙碌而充实，对她来说，按照计划完成工作，获得成果，这样的过程便会令她觉得安稳和满足。等到太阳高高悬在天空时，她已经和同行的教士们将原本朴素的餐厅装饰得缤纷多彩。菲比将茶和点心放在餐桌上，看着孩子们穿着声骸们浆洗熨平的新衣，兴高采烈地
+
+向嬷嬷们的怀抱，从她们手中接过悉心包装的礼物。
+
+被这样的温暖的画面所感染，菲比不由得也微笑起来。
+
+她记得远航经商的父亲一定会在启程的第一站为她购买礼物，在漫长的航路中，母亲会构思关于这次带回的礼物的故事，在回家后讲给她听。它们有时是险象环生的精彩冒险，有时是温暖可爱的枕边童话。她最喜欢的一个礼物是粉色的兔子布偶，在故事中，她是一个优雅的音乐家。
+
+灰暗的过往在她的记忆中逐渐模糊，她只会回忆起那些美好的事物。
+
+有小声骸拉了拉她的衣角，向她展示吹起来的好大一把气球，她习惯性地伸手想要摸摸它的头。
+
+“见习教士菲比！”
+
+前辈的轻喝令菲比猛地一哆嗦，她连忙背过手去，目送着有些落寞的小声骸摇摇晃晃的离开，前辈的如炬的目光仿佛要将她洞穿，“岁主在上，注意你的身份。”
+
+……她还没有完全习惯身份的转变带来的影响，尤其是作为教士，不能与声骸亲密接触这一点。
+
+岁主令她遇到了善良的人们，给予她事物与住所，也赐予了她新的责任，令她得以将收到的好意一一回报，无论如何，作为教士，她要履行好自己的责任。
+
+而在作为“菲比”的时候，她也有属于自己的，她的朋友们相会的时间。
+
+她下意识地抚摸着腰间挂着的相片盒，这是属于她的小小奇迹，她的朋友们将她最珍贵的回忆从漆黑的海底中找了回来，带回了她的身边。
+
+“菲比姐姐，我的气球飞到树上去了，我拿不下来……吉米说你会飞，可不可以……”
+
+“当然！”
+
+有孩子拉了拉她的衣角，令她回过神来，她收起纷繁的思绪，回到人群中，再次投身于庆典忙碌的工作里。
+
+ 
+
+夕阳挂在屋角，暮色从天边晕染。
+
+工作结束，人群散去，一切都安静了下来，菲比坐在长椅上，闭上眼睛感受着温柔吹拂的海风。
+
+时间仿佛在此刻慢了下来。
+
+小小的背影在夕阳下显得有些寂寥，来寻找菲比的前辈本想上前搭话，靠近时发现她的呼吸轻浅，已经进入了梦乡。
+
+女孩靠在长椅上安睡，小声骸们从角落悄悄靠近，挨挨挤挤地依偎在她的身边。
+
+年长的教士叹了口气，却又收回脚步，转身离开。
+
+“这次……就当没看到吧。”`,
+  },
+  {
+    id: "5",
+    title: "遥远炫目的光辉中",
+    content: `菲比还能依稀回忆起她看到的最后一场狂欢节。
+
+她坐在父亲肩头看着高天讯使从头顶掠过，缤纷的彩带与花瓣飘落如雨，欢呼的浪潮席卷而来，幼时的记忆过于朦胧，以至于追忆狂欢节时，能回想起的只有柔和的光辉和遥远的回声。
+
+但她仍然记得那时的父母的神情，那些发自内心的欢笑——曾经回忆起来就会感到心痛的过往，如今仍在记忆深处仍闪着光。
+
+那些只存在于梦中的场景，终于真切地出现在了她的眼前。
+
+她站在人群里，看着黑发的「勇者」沐浴在光里，金色的桂冠缓缓降下，落在{TA}的头顶。
+
+——她的心随之怦然跳动，在震耳欲聋的欢呼声里，她的目光不受控制地追随着那道金色的光芒。
+
+"是桂冠——！"
+
+"英白拉多在上——"
+
+“岁主大人降下神迹了！”
+
+她的视线在一声声喜极而泣的呼唤中模糊。
+
+有谁不会被这样炫目的景象所触动？就连神明都会为此降下神迹，在这一刻她止不住地想，岁主又怎会因人们举办狂欢节而触怒？祂一定是热爱着狂欢节，热爱着人们的欢笑。
+
+那些自从云中庭院回来起便笼罩在心头的微茫阴影再度浮现，又转瞬被欢歌笑语冲淡。
+
+这一次，她抓住了那一丝缥缈流离的疑问，那些她曾经隐隐注意到，却被她遗忘的事情；那些她心生疑窦，却下意识令自己不去思考的事情。
+
+菲比用力眨了眨眼睛，拭去眼角的泪水，再次看向那个被人群簇拥着的身影。
+
+她隐隐觉得，如果是{TA} ，或许能够知晓答案，解答迷茫。
+
+总有一天，她会去找寻那些疑问的答案。`,
+  },
+]);
+
+const currentStory = ref(0);
+const storyRef = ref();
+const selectStory = (index) => {
+  currentStory.value = index;
+};
+
+const prevStory = () => {
+  currentStory.value =
+    currentStory.value > 0 ? currentStory.value - 1 : stories.value.length - 1;
+  storyRef.value.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+const nextStory = () => {
+  currentStory.value =
+    currentStory.value < stories.value.length - 1 ? currentStory.value + 1 : 0;
+  storyRef.value.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+
+interface Chibi {
+  src: string;
+  top: number;
+  left: number;
+}
+
+const chibiList = ref<Chibi[]>([]);
+onMounted(async () => {
+  // 1. 基础配置信息
+  const total = 16;
+  let pickCount = 3; // 每次抽取 3 张
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const isMobile = window.innerWidth <= 768;
+  // 如果已知单张小人图片的宽高，可避免超出边界；
+  // 假设小人图片宽 100px、高 100px，按需替换：
+  const imgWidth = 100;
+  const imgHeight = 100;
+
+  // 2. Fisher–Yates 洗牌函数
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  // 3. 随机选出 3 个编号
+  if (isMobile) {
+    pickCount = 1;
+  }
+  const nums = shuffle(Array.from({ length: total }, (_, k) => k + 1));
+  const picks = nums.slice(0, pickCount);
+
+  // 4. 生成随机位置并填充 chibiList
+  chibiList.value = []; // 先清空
+  picks.forEach((i) => {
+    chibiList.value.push({
+      src: `/QImages/1 (${i}).png`,
+      left: Math.random() * (vw - imgWidth), // 保证不超出左右边界
+      top: Math.random() * (vh - imgHeight), // 保证不超出上下边界
+    });
+  });
+
+  // 2. 等 img 渲染到 DOM
+  await nextTick();
+
+  // 3. 给每个小人绑定 GSAP 动画
+  const imgs = document.querySelectorAll<HTMLImageElement>(".chibi-img");
+  imgs.forEach((img, index) => {
+    const padding = 200; // 边缘预留空间
+    // ✅ 初始出场动画（闪现）
+    gsap.fromTo(
+      img,
+      { opacity: 0, scale: 0.5 },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.8,
+        ease: "back.out(2)",
+        delay: 0.2 * index,
+      }
     );
 
-    gsap.utils.toArray(".tl-item").forEach((it: any, idx: number) => {
-      gsap.from(it.querySelector(".tl-card"), {
-        scrollTrigger: {
-          trigger: it,
-          start: "top 85%",
-          toggleActions: "play none none reverse",
+    // ✅ 鼠标靠近闪避
+    img.addEventListener("mouseenter", () => {
+      gsap.killTweensOf(img);
+
+      gsap.to(img, {
+        x: "+=" + ((Math.random() - 0.5) * 400).toFixed(0),
+        y: "+=" + ((Math.random() - 0.5) * 400).toFixed(0),
+        duration: 1.2,
+        ease: "back.out(2)",
+        onComplete: () => {
+          // 闪避完成后，再重新启用动画
+          animate(img);
         },
-        opacity: 0,
-        y: 22,
-        duration: 0.7,
-        delay: idx * 0.06,
       });
     });
 
+    const animate = (img: HTMLImageElement) => {
+      let { x, y } = img.getBoundingClientRect();
+      let deltaX = (Math.random() - 0.5) * 200;
+      let deltaY = (Math.random() - 0.5) * 200;
 
-  } else {
-    document.documentElement.classList.add("reduced-motion");
-  }
+      // 预测一下偏移后的位置
+      let nextX = x + deltaX;
+      let nextY = y + deltaY;
+
+      // 校正：防漂出左、右、上、下边界
+      if (nextX < padding) deltaX = padding - x;
+      if (nextX + img.width > window.innerWidth - padding)
+        deltaX = window.innerWidth - padding - (x + img.width);
+      if (nextY < padding) deltaY = padding - y;
+      if (nextY + img.height > window.innerHeight - padding)
+        deltaY = window.innerHeight - padding - (y + img.height);
+
+      gsap.to(img, {
+        x: `+=${deltaX.toFixed(0)}`,
+        y: `+=${deltaY.toFixed(0)}`,
+        rotation: `+=${((Math.random() - 0.5) * 60).toFixed(0)}`,
+        duration: 2 + Math.random() * 2,
+        ease: "power1.inOut",
+        onComplete: () => animate(img),
+      });
+    };
+    animate(img);
+  });
 });
 </script>
 
 <style scoped lang="scss">
-/* ---------- 整体色调与背景 ---------- */
-.megumi-page {
-  position: relative;
+/* 菲比风格配色变量 */
+$phoebe-gold: #f6de97;
+$phoebe-gold-light: #fff9e6;
+$phoebe-blue-dark: #0c1e3a;
+$phoebe-blue-deep: #07122b;
+$phoebe-blue-light: #3b7be0;
+$phoebe-blue-bright: #6aa7ff;
+$phoebe-white: #fafcfd;
+$phoebe-white-trans: rgba(250, 252, 253, 0.95);
+
+/* 扩展配色 */
+$phoebe-gold-dark: rgba($phoebe-gold, 15%);
+$phoebe-blue-darker: rgba($phoebe-blue-dark, 5%);
+$phoebe-blue-trans: rgba($phoebe-blue-light, 0.1);
+/* 固定浮动小 chibi 层（薄荷珊瑚风格） */
+.floating-chibis {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99;
+
+  .chibi-img {
+    position: absolute;
+    width: 80px;
+    user-select: none;
+    transform-origin: center center;
+    pointer-events: auto;
+
+    filter: drop-shadow(0 6px 16px rgba(3, 56, 50, 0.15)) saturate(1.1)
+      brightness(1.05);
+    transition: transform 360ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  }
+}
+/* 全局样式 */
+.phoebe-character-page {
   min-height: 100vh;
-
-  background: linear-gradient(180deg, #fffaf5 0%, #fff0f0 40%, #a2d4ff 100%);
-  font-family: "Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto,
-    Arial;
-  color: #121417;
-  /* 深色文字以保证可读性 */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  padding: clamp(18px, 4vw, 80px);
-  box-sizing: border-box;
+  background: linear-gradient(
+      160deg,
+      $phoebe-blue-deep 0%,
+      $phoebe-blue-dark 100%
+    ),
+    radial-gradient(
+      circle at 20% 30%,
+      rgba($phoebe-blue-light, 0.08) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba($phoebe-gold, 0.05) 0%,
+      transparent 50%
+    );
+  color: $phoebe-white;
+  font-family: "Noto Sans SC", "Segoe UI", system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
   padding-top: 60px;
+}
 
-  .container {
-    position: relative;
-    z-index: 10;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: clamp(12px, 2vw, 40px);
+.character-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* 背景装饰元素 */
+.bg-ornament {
+  position: fixed;
+  border-radius: 50%;
+  opacity: 0.03;
+  z-index: 0;
+  pointer-events: none;
+
+  &.bg-ornament-1 {
+    width: 400px;
+    height: 400px;
+    top: -100px;
+    right: -100px;
+    background: radial-gradient(circle, $phoebe-gold 0%, transparent 70%);
   }
 
-  &.reduced-motion * {
-    transition: none !important;
-    animation: none !important;
+  &.bg-ornament-2 {
+    width: 300px;
+    height: 300px;
+    bottom: -50px;
+    left: -50px;
+    background: radial-gradient(circle, $phoebe-blue-light 0%, transparent 70%);
+  }
+
+  &.bg-ornament-3 {
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    left: 10%;
+    background: radial-gradient(circle, $phoebe-gold 0%, transparent 70%);
   }
 }
 
+/* 通用部分样式 */
+.section-header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
 
-
-
-
-/* ---------- HERO 布局（玻璃面板 + 花瓣装饰） ---------- */
-.hero {
+.section-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(90deg, $phoebe-gold, $phoebe-gold-light);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   position: relative;
+  display: inline-block;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, $phoebe-gold, transparent);
+    border-radius: 2px;
+  }
+}
+
+.section-subtitle {
+  color: rgba($phoebe-white, 0.7);
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+/* 英雄区域 */
+.character-hero {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 28px;
+  grid-template-columns: 300px 1fr;
+  gap: 3rem;
+  margin-bottom: 4rem;
   align-items: start;
-  padding: 12px;
-  margin-bottom: 6px;
 
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
 
+.hero-avatar-section {
+  position: sticky;
+  top: 2rem;
 
-  .left-col {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    align-items: center;
+  @media (max-width: 900px) {
+    position: static;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}
+
+.avatar-frame {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba($phoebe-gold, 0.1),
+    inset 0 0 40px rgba($phoebe-blue-light, 0.1);
+
+  .avatar-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at center,
+      transparent 30%,
+      rgba($phoebe-gold, 0.15) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
   }
 
-  .avatar-card {
-    background: linear-gradient(180deg,
-        rgba(255, 255, 255, 0.92),
-        rgba(255, 248, 249, 0.86));
-    border-radius: 16px;
-    padding: 12px;
-    display: grid;
-    justify-items: center;
-    gap: 8px;
-    border: 1px solid rgba(158, 24, 32, 0.06);
-    box-shadow: 0 22px 56px rgba(158, 24, 32, 0.06);
-    cursor: pointer;
-
-    width: 100%;
-
-    &:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 30px 80px rgba(158, 24, 32, 0.11);
-    }
-  }
-
-  .avatar-wrap {
-    width: 100%;
-    display: block;
-  }
-
-  .avatar {
+  .character-avatar {
     width: 100%;
     height: auto;
-    border-radius: 12px;
     display: block;
-    box-shadow: 0 12px 40px rgba(158, 24, 32, 0.06);
-    border: 3px solid rgba(255, 255, 255, 0.9);
-    transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
-
-  }
-
-  .avatar-card:hover .avatar {
-    transform: translateY(-4px) scale(1.01);
-  }
-
-
-
-
-
-  .right-col {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  /* ---------- hero-panel（毛玻璃面板） ---------- */
-  .hero-panel {
     position: relative;
-    z-index: 9;
-    padding: 18px;
-    border-radius: 14px;
-    background: linear-gradient(180deg,
-        rgba(255, 245, 246, 0.62),
-        rgba(255, 238, 240, 0.44));
-    -webkit-backdrop-filter: blur(6px) saturate(120%);
-    backdrop-filter: blur(6px) saturate(120%);
-    border: 1px solid rgba(158, 24, 32, 0.08);
-    box-shadow: 0 18px 50px rgba(20, 18, 20, 0.06);
+    z-index: 2;
+    transition: transform 0.8s ease;
+
+    &:hover {
+      transform: scale(1.02);
+    }
   }
 
-  .name {
-    font-size: clamp(1.6rem, 3vw, 2.4rem);
-    margin: 0;
-
-    background: linear-gradient(90deg, #e9c36a 0%, #f6de97 30%, #4a86ff 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    line-height: 1;
-    font-weight: 900;
-    letter-spacing: 0.6px;
-    display: inline-block;
-    -webkit-text-stroke: 0.2px rgba(0, 0, 0, 0.06);
-  }
-
-  .jp {
-    font-size: 0.95rem;
-    color: #6f6f6f;
-    margin-left: 8px;
-    font-weight: 400;
-  }
-
-  .subtitle {
-    margin: 6px 0 0;
-    font-size: 1.02rem;
-    color: #e9c36a;
-    font-weight: 600;
-    line-height: 1.4;
-    
-  }
-
-  .lead {
-    margin: 10px 0 0;
-    color: #47525a;
-    line-height: 1.7;
-    max-width: 72ch;
-  }
-}
-
-/* ---------- 卡片与通用元素微调 ---------- */
-.card {
-  margin-top: 22px;
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.96),
-      rgba(255, 248, 249, 0.94));
-  border-radius: 14px;
-  padding: 18px;
-  box-shadow: 0 18px 44px rgba(20, 20, 30, 0.06);
-  backdrop-filter: blur(4px);
-  color: #222;
-  border: 1px solid rgba(220, 200, 205, 0.5);
-
-  h2 {
-    margin: 0 0 8px 0;
-    font-size: 1.12rem;
-    color: #111315;
-  }
-
-  .card-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .btn {
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: none;
-    background: #ffffff;
-    box-shadow: 0 8px 22px rgba(20, 20, 30, 0.04);
-    cursor: pointer;
-    font-weight: 600;
-  }
-}
-
-/* personality */
-.personality .traits li {
-  padding: 12px 0;
-  border-bottom: 1px dashed rgba(243, 183, 201, 0.12);
-  font-size: 1rem;
-  color: #333;
-}
-
-.quote {
-  margin-top: 12px;
-  padding: 12px 14px;
-  border-left: 4px solid #ffd580;
-  background: linear-gradient(90deg, rgba(243, 183, 201, 0.04), transparent);
-  color: #4f4f4f;
-  border-radius: 6px;
-}
-
-/* overview 配队 */
-.overview .two-col {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-.team ul {
-  display: flex;
-  gap: 8px;
-  padding: 6px 0;
-}
-
-.team li img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-}
-
-/* timeline */
-/* timeline（椿风格改版） */
-.timeline {
-  position: relative;
-
-  .tl-wrap {
-    position: relative;
-    padding: 18px 6px 8px 86px;
-    /* 左侧留给标记与中线 */
-  }
-
-  /* 中心竖线：带渐变与花瓣光晕 */
-  .vl {
+  .avatar-decoration {
     position: absolute;
-    left: 72px;
-    top: 28px;
-    bottom: 20px;
-    width: 4px;
-    border-radius: 6px;
-    background: linear-gradient(180deg,
-        rgba(158, 24, 32, 0.08),
-        rgba(255, 123, 144, 0.06) 50%,
-        rgba(158, 24, 32, 0.04));
-    box-shadow: 0 6px 18px rgba(158, 24, 32, 0.03),
-      inset 0 0 10px rgba(255, 255, 255, 0.02);
-    z-index: 1;
-    opacity: 0.95;
-  }
-
-  .tl-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .tl-item {
-    position: relative;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
     display: flex;
-    gap: 18px;
-    align-items: flex-start;
-    margin: 18px 0;
-    z-index: 2;
-    transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.28s;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 3;
+    background: linear-gradient(
+      to top,
+      rgba($phoebe-blue-dark, 0.9),
+      transparent
+    );
 
+    .decoration-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        $phoebe-gold,
+        transparent
+      );
+    }
+
+    .decoration-star {
+      color: $phoebe-gold;
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
   }
+}
 
-  .tl-card {
-    background: linear-gradient(180deg,
-        rgba(255, 255, 255, 0.99),
-        rgb(255, 253, 248));
-    border-radius: 12px;
-    padding: 14px 18px;
-    box-shadow: 0 12px 36px rgba(20, 20, 30, 0.04);
-    width: calc(100% - 120px);
-    /* 留出左侧空间 */
-    border-left: 4px solid transparent;
-    transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.28s,
-      border-color 0.28s;
-    position: relative;
-    z-index: 2;
-  }
+.avatar-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 
-  .tl-item:hover .tl-card,
-  .tl-item:focus-within .tl-card {
-    transform: translateY(-8px);
-    box-shadow: 0 24px 60px rgba(122, 158, 24, 0.08);
-    border-left-color: rgba(158, 24, 32, 0.12);
-  }
-
-  .tl-title {
-    margin: 0 0 6px 0;
-    font-size: 1.02rem;
-    color: #111115;
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-  }
-
-  .tl-meta {
-    color: #e9c36a;
+  .meta-badge {
+    padding: 0.7rem 1.2rem;
+    border-radius: 50px;
     font-size: 0.9rem;
     font-weight: 600;
-    opacity: 0.95;
+    text-align: center;
+    letter-spacing: 0.5px;
+
+    &.resonance-badge {
+      background: linear-gradient(
+        90deg,
+        rgba($phoebe-blue-light, 0.2),
+        rgba($phoebe-blue-bright, 0.2)
+      );
+      border: 1px solid rgba($phoebe-blue-light, 0.3);
+      color: $phoebe-blue-bright;
+    }
+
+    &.faction-badge {
+      background: linear-gradient(
+        90deg,
+        rgba($phoebe-gold, 0.1),
+        rgba($phoebe-gold-light, 0.1)
+      );
+      border: 1px solid rgba($phoebe-gold, 0.2);
+      color: $phoebe-gold;
+    }
+  }
+}
+
+.hero-info-section {
+  padding-top: 1rem;
+}
+
+.character-title-group {
+  margin-bottom: 2rem;
+
+  .character-name {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 0 0 0.5rem 0;
+
+    .name-main {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: $phoebe-white;
+      text-shadow: 0 4px 20px rgba($phoebe-blue-light, 0.3);
+
+      @media (max-width: 768px) {
+        font-size: 2.8rem;
+      }
+    }
+
+    .name-sub {
+      font-size: 1.5rem;
+      color: $phoebe-gold;
+      font-weight: 400;
+      opacity: 0.8;
+    }
   }
 
-  .tl-desc {
+  .character-title {
+    font-size: 1.2rem;
+    color: $phoebe-blue-bright;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+}
+
+.character-quote {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba($phoebe-blue-dark, 0.5);
+  border-radius: 12px;
+  border-left: 4px solid $phoebe-gold;
+
+  .quote-icon {
+    color: $phoebe-gold;
+    font-size: 2rem;
+    opacity: 0.6;
+
+    &.left {
+      align-self: flex-start;
+    }
+
+    &.right {
+      align-self: flex-end;
+    }
+  }
+
+  .quote-text {
+    flex: 1;
     margin: 0;
-    color: #444;
-    line-height: 1.6;
-    white-space: pre-wrap;
+    font-size: 1.4rem;
+    font-style: italic;
+    color: $phoebe-white;
+    text-align: center;
+    line-height: 1.5;
   }
+}
 
-  /* small screens: 标记移到卡片顶部，节省空间 */
-  @media (max-width: 980px) {
-    .tl-wrap {
-      padding-left: 14px;
-    }
+.character-description {
+  margin-bottom: 2.5rem;
 
-    .vl {
-      display: none;
-    }
+  p {
+    margin: 0 0 1rem 0;
+    color: rgba($phoebe-white, 0.9);
+    line-height: 1.7;
+    font-size: 1.1rem;
 
-    .tl-item {
-      display: block;
-      margin: 14px 0;
-    }
-
-    .tl-card {
-      width: 100%;
-      padding: 12px;
-      border-left: 0;
-    }
-
-    .tl-item:hover .tl-card {
-      transform: none;
-      box-shadow: 0 10px 30px rgba(20, 20, 30, 0.04);
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 }
 
-/* ---------- 响应式调整（移动端优化） ---------- */
-@media (max-width: 980px) {
-  .hero {
+.character-traits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 18px;
-    padding: 8px;
   }
 
-  .hero .left-col {
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .avatar-card {
-    width: 120px;
-    padding: 8px;
-  }
-
-  .avatar {
+  .trait {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba($phoebe-blue-dark, 0.4);
     border-radius: 10px;
-  }
+    border: 1px solid rgba($phoebe-blue-light, 0.1);
+    transition: transform 0.3s ease, border-color 0.3s ease;
 
+    &:hover {
+      transform: translateY(-3px);
+      border-color: rgba($phoebe-gold, 0.3);
+    }
 
+    .trait-icon {
+      color: $phoebe-gold;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: rgba($phoebe-gold, 0.1);
+      border-radius: 8px;
+    }
 
+    .trait-content {
+      flex: 1;
 
+      .trait-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $phoebe-white;
+        margin-bottom: 0.3rem;
+      }
 
-  .hero .hero-panel {
-    padding: 14px;
-  }
-
-  .card {
-    padding: 14px;
-    border-radius: 12px;
-  }
-
-  .name {
-    font-size: 1.6rem;
-  }
-
-  .subtitle {
-    font-size: 0.98rem;
-  }
-
-  .lead {
-    font-size: 0.95rem;
-    max-width: 100%;
+      .trait-desc {
+        font-size: 0.9rem;
+        color: rgba($phoebe-white, 0.7);
+        line-height: 1.4;
+      }
+    }
   }
 }
 
-/* 小无障碍与触摸优化 */
-.avatar-card,
-.btn {
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.06);
+/* 能力模块 */
+.character-abilities {
+  margin-bottom: 4rem;
+}
+
+.abilities-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ability-card {
+  background: linear-gradient(
+    145deg,
+    rgba($phoebe-blue-dark, 0.7),
+    rgba($phoebe-blue-darker, 0.7)
+  );
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba($phoebe-blue-light, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba($phoebe-blue-light, 0.3);
+  }
+
+  &.ability-overview {
+    @media (max-width: 1100px) {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.ability-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba($phoebe-blue-light, 0.1);
+
+  .ability-icon {
+    font-size: 1.8rem;
+  }
+
+  .ability-title {
+    margin: 0;
+    font-size: 1.4rem;
+    color: $phoebe-white;
+    font-weight: 700;
+  }
+}
+
+.ability-content {
+  color: rgba($phoebe-white, 0.9);
+
+  p {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+}
+
+.mechanic-flow {
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .flow-node {
+    padding: 0.8rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 140px;
+
+    &:not(.option-damage):not(.option-support) {
+      background: rgba($phoebe-white, 0.1);
+      border: 1px solid rgba($phoebe-white, 0.2);
+    }
+
+    &.option-damage {
+      background: linear-gradient(
+        90deg,
+        rgba(231, 76, 60, 0.2),
+        rgba(192, 57, 43, 0.2)
+      );
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      color: #ff8a80;
+    }
+
+    &.option-support {
+      background: linear-gradient(
+        90deg,
+        rgba(52, 152, 219, 0.2),
+        rgba(41, 128, 185, 0.2)
+      );
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      color: #81d4fa;
+    }
+  }
+
+  .flow-arrow {
+    color: $phoebe-gold;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  .flow-options {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+    }
+  }
+
+  .flow-or {
+    color: rgba($phoebe-white, 0.6);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .flow-desc {
+    font-size: 0.8rem;
+    color: rgba($phoebe-white, 0.7);
+    margin-top: 0.3rem;
+    text-align: center;
+  }
+}
+
+.skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .skill-item {
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed rgba($phoebe-blue-light, 0.1);
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .skill-name {
+      font-weight: 700;
+      color: $phoebe-blue-bright;
+      margin-bottom: 0.3rem;
+      font-size: 1.1rem;
+    }
+
+    .skill-desc {
+      font-size: 0.95rem;
+      color: rgba($phoebe-white, 0.8);
+      line-height: 1.5;
+    }
+  }
+}
+
+.rotation-options {
+  display: flex;
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .rotation-option {
+    flex: 1;
+
+    .rotation-title {
+      font-size: 1.1rem;
+      color: $phoebe-white;
+      margin: 0 0 0.8rem 0;
+      font-weight: 700;
+    }
+
+    .rotation-sequence {
+      background: rgba($phoebe-blue-dark, 0.5);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      color: rgba($phoebe-white, 0.9);
+
+      .skill-key {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        background: rgba($phoebe-gold, 0.1);
+        border: 1px solid rgba($phoebe-gold, 0.3);
+        border-radius: 4px;
+        margin: 0 0.2rem;
+        font-weight: 700;
+        color: $phoebe-gold;
+      }
+
+      .skill-cycle {
+        color: $phoebe-blue-bright;
+        font-weight: 600;
+      }
+    }
+
+    .rotation-desc {
+      font-size: 0.9rem;
+      color: rgba($phoebe-white, 0.7);
+      font-style: italic;
+    }
+  }
+
+  .rotation-divider {
+    width: 1px;
+    background: rgba($phoebe-blue-light, 0.2);
+
+    @media (max-width: 768px) {
+      width: 100%;
+      height: 1px;
+    }
+  }
+}
+
+.skill-legend {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba($phoebe-blue-light, 0.1);
+
+  .legend-item {
+    font-size: 0.85rem;
+    color: rgba($phoebe-white, 0.6);
+    text-align: center;
+  }
+}
+
+.state-comparison {
+  background: rgba($phoebe-blue-dark, 0.5);
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid rgba($phoebe-blue-light, 0.1);
+
+  .comparison-title {
+    text-align: center;
+    font-size: 1.5rem;
+    color: $phoebe-white;
+    margin: 0 0 1.5rem 0;
+    font-weight: 700;
+  }
+}
+
+.comparison-table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+
+  .table-header,
+  .table-row {
+    display: table-row;
+  }
+
+  .table-cell {
+    display: table-cell;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba($phoebe-blue-light, 0.1);
+
+    &:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: $phoebe-white;
+      background: rgba($phoebe-blue-dark, 0.3);
+      width: 25%;
+    }
+  }
+
+  .table-header {
+    .table-cell {
+      background: rgba($phoebe-blue-dark, 0.8);
+      color: $phoebe-white;
+      font-weight: 700;
+      font-size: 1.1rem;
+
+      &.state-damage {
+        background: linear-gradient(
+          90deg,
+          rgba(231, 76, 60, 0.3),
+          rgba(192, 57, 43, 0.3)
+        );
+        color: #ff8a80;
+      }
+
+      &.state-support {
+        background: linear-gradient(
+          90deg,
+          rgba(52, 152, 219, 0.3),
+          rgba(41, 128, 185, 0.3)
+        );
+        color: #81d4fa;
+      }
+    }
+  }
+
+  .table-row {
+    &:last-child .table-cell {
+      border-bottom: none;
+    }
+
+    .table-cell {
+      color: rgba($phoebe-white, 0.9);
+      line-height: 1.5;
+    }
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+
+    .table-header,
+    .table-row {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid rgba($phoebe-blue-light, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .table-cell {
+      display: block;
+      text-align: left !important;
+      width: 100% !important;
+      border-bottom: 1px solid rgba($phoebe-blue-light, 0.1);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &::before {
+        content: attr(data-label);
+        display: block;
+        font-weight: 700;
+        color: $phoebe-white;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+/* 记忆模块 */
+.character-memories {
+  margin-bottom: 4rem;
+}
+
+.memories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.memory-card {
+  background: linear-gradient(
+    145deg,
+    rgba($phoebe-blue-dark, 0.7),
+    rgba($phoebe-blue-darker, 0.7)
+  );
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba($phoebe-blue-light, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba($phoebe-gold, 0.2);
+
+    .memory-image img {
+      transform: scale(1.05);
+    }
+
+    .memory-overlay .overlay-text {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.memory-image {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .memory-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 60%,
+      rgba($phoebe-blue-dark, 0.9) 100%
+    );
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 1.5rem;
+
+    .overlay-text {
+      color: $phoebe-gold;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+    }
+  }
+}
+
+.memory-content {
+  padding: 1.5rem;
+
+  .memory-title {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.4rem;
+    color: $phoebe-white;
+    font-weight: 700;
+  }
+
+  .memory-desc {
+    margin: 0;
+    color: rgba($phoebe-white, 0.8);
+    line-height: 1.6;
+    font-size: 1rem;
+  }
+}
+
+/* 共鸣链模块 */
+.resonance-chain {
+  margin-bottom: 4rem;
+}
+
+.chain-container {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.chain-track {
+  position: absolute;
+  left: 60px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    to bottom,
+    rgba($phoebe-gold, 0.3),
+    rgba($phoebe-blue-light, 0.5),
+    rgba($phoebe-gold, 0.3)
+  );
+  border-radius: 3px;
+
+  @media (max-width: 768px) {
+    left: 30px;
+  }
+}
+
+.chain-nodes {
+  position: relative;
+  z-index: 2;
+}
+
+.chain-node {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
+  padding-left: 100px;
+  animation: nodeAppear 0.6s ease-out forwards;
+  animation-delay: calc(var(--node-index) * 0.1s);
+  opacity: 0;
+
+  @media (max-width: 768px) {
+    padding-left: 70px;
+    margin-bottom: 2rem;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+@keyframes nodeAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.node-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    width: 50px;
+    height: 50px;
+  }
+
+  .marker-inner {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $phoebe-blue-dark, $phoebe-blue-deep);
+    border: 3px solid $phoebe-gold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: $phoebe-gold;
+    font-size: 1.2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3),
+      inset 0 0 15px rgba($phoebe-gold, 0.1);
+
+    @media (max-width: 768px) {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+  }
+}
+
+.node-content {
+  flex: 1;
+  background: rgba($phoebe-blue-dark, 0.6);
+  border-radius: 14px;
+  padding: 1.5rem;
+  border-left: 4px solid $phoebe-gold;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    border-left-color: $phoebe-blue-bright;
+  }
+
+  .node-title {
+    font-size: 1.3rem;
+    color: $phoebe-gold;
+    margin: 0 0 0.8rem 0;
+    font-weight: 700;
+
+    @media (max-width: 768px) {
+      font-size: 1.1rem;
+    }
+  }
+
+  .node-description {
+    color: $phoebe-blue-bright;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+  }
+
+  .node-effect {
+    .effect-label {
+      color: rgba($phoebe-white, 0.7);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .effect-text {
+      color: rgba($phoebe-white, 0.9);
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+  }
+}
+
+/* 故事模块 */
+.character-stories {
+  margin-bottom: 4rem;
+}
+
+.stories-container {
+  background: rgba($phoebe-blue-dark, 0.5);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba($phoebe-blue-light, 0.1);
+}
+
+.stories-tabs {
+  display: flex;
+  background: rgba($phoebe-blue-dark, 0.8);
+  border-bottom: 1px solid rgba($phoebe-blue-light, 0.1);
+  overflow-x: auto;
+
+  .story-tab {
+    flex: 1;
+    min-width: 120px;
+    padding: 1.2rem 1rem;
+    background: transparent;
+    border: none;
+    border-right: 1px solid rgba($phoebe-blue-light, 0.1);
+    color: rgba($phoebe-white, 0.7);
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &:hover {
+      background: rgba($phoebe-blue-light, 0.1);
+      color: $phoebe-white;
+    }
+
+    &.active {
+      background: rgba($phoebe-gold, 0.1);
+      color: $phoebe-gold;
+      border-bottom: 3px solid $phoebe-gold;
+
+      .tab-index {
+        background: $phoebe-gold;
+        color: $phoebe-blue-dark;
+      }
+    }
+
+    .tab-index {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba($phoebe-white, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .tab-title {
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.2;
+    }
+  }
+}
+
+.story-viewer {
+  padding: 2rem;
+  min-height: 400px;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+}
+
+.story-content {
+  .story-current-title {
+    font-size: 1.8rem;
+    color: $phoebe-white;
+    margin: 0 0 1.5rem 0;
+    font-weight: 700;
+    border-bottom: 1px solid rgba($phoebe-blue-light, 0.2);
+    padding-bottom: 0.8rem;
+
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  .story-text {
+    color: rgba($phoebe-white, 0.9);
+    line-height: 1.8;
+    font-size: 1.05rem;
+    white-space: pre-wrap;
+    :deep(br) {
+      margin-bottom: 1rem;
+      display: block;
+      content: "";
+    }
+
+    @media (max-width: 768px) {
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+  }
+}
+
+.story-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba($phoebe-blue-light, 0.1);
+}
+
+.control-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba($phoebe-blue-light, 0.1);
+  border: 1px solid rgba($phoebe-blue-light, 0.2);
+  color: $phoebe-white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba($phoebe-blue-light, 0.2);
+    border-color: rgba($phoebe-gold, 0.3);
+    color: $phoebe-gold;
+    transform: scale(1.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+.story-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  color: rgba($phoebe-white, 0.9);
+  font-weight: 600;
+
+  .current-story {
+    color: $phoebe-gold;
+  }
+
+  .counter-divider {
+    color: rgba($phoebe-white, 0.5);
+  }
+
+  .total-stories {
+    color: rgba($phoebe-white, 0.7);
+  }
+}
+
+.story-fade-enter-active,
+.story-fade-leave-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.story-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.story-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* 背景档案模块 */
+.character-background {
+  margin-bottom: 4rem;
+}
+
+.background-content {
+  background: rgba($phoebe-blue-dark, 0.5);
+  border-radius: 20px;
+  padding: 2.5rem;
+  border: 1px solid rgba($phoebe-blue-light, 0.1);
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 2rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+}
+
+.background-text {
+  color: rgba($phoebe-white, 0.9);
+  line-height: 1.8;
+  font-size: 1.05rem;
+
+  p {
+    margin: 0 0 1.5rem 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.background-seal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .seal-content {
+    background: rgba($phoebe-blue-dark, 0.8);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    border: 2px solid rgba($phoebe-gold, 0.3);
+    width: 100%;
+
+    .seal-icon {
+      font-size: 3rem;
+      color: $phoebe-gold;
+      margin-bottom: 1rem;
+    }
+
+    .seal-text {
+      font-size: 1.1rem;
+      color: $phoebe-white;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .seal-date {
+      font-size: 0.9rem;
+      color: rgba($phoebe-white, 0.7);
+      font-style: italic;
+    }
+  }
+}
+
+/* 页脚 */
+.character-footer {
+  margin-top: 4rem;
+  padding: 2.5rem 0;
+  border-top: 1px solid rgba($phoebe-blue-light, 0.1);
+}
+
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  .logo-icon {
+    font-size: 2rem;
+    color: $phoebe-gold;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $phoebe-white;
+    letter-spacing: 1px;
+  }
+}
+
+.footer-quote {
+  margin-bottom: 1.5rem;
+
+  p {
+    font-size: 1.2rem;
+    color: $phoebe-gold;
+    font-style: italic;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.footer-copyright {
+  font-size: 0.9rem;
+  color: rgba($phoebe-white, 0.6);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .character-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+  }
+
+  .ability-card-header .ability-title {
+    font-size: 1.2rem;
+  }
+
+  .comparison-table {
+    .table-header .table-cell {
+      font-size: 1rem;
+      padding: 1rem 0.8rem;
+    }
+
+    .table-row .table-cell {
+      padding: 1rem 0.8rem;
+    }
+  }
+
+  .state-comparison {
+    padding: 1.5rem;
+  }
 }
 </style>
