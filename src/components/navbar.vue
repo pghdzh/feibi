@@ -60,7 +60,97 @@
           :style="getSparkleStyle(i)"
         ></span>
       </router-link>
+      <!-- BGM音乐播放按钮 -->
+      <div
+        class="music-player-wrapper"
+        :class="{ 'music-playing': isMusicPlaying }"
+      >
+        <button
+          class="music-toggle-btn"
+          @click="toggleMusic"
+          :aria-label="isMusicPlaying ? '暂停背景音乐' : '播放背景音乐'"
+          aria-live="polite"
+        >
+          <!-- 音乐符号主体 -->
+          <div class="music-icon">
+            <div class="music-note note-1">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9 18V5L21 3V16"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <circle
+                  cx="6"
+                  cy="18"
+                  r="3"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="18"
+                  cy="16"
+                  r="3"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <div class="music-note note-2">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 6V18M9 15V9M15 15V9"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+          </div>
 
+          <!-- 播放/暂停状态指示器 -->
+          <div class="play-pause-indicator">
+            <div class="play-bar bar-1"></div>
+            <div class="play-bar bar-2"></div>
+            <div class="play-bar bar-3"></div>
+          </div>
+
+          <!-- 脉冲光环效果 -->
+          <div class="music-pulse-ring"></div>
+          <div class="music-pulse-ring ring-delay-1"></div>
+          <div class="music-pulse-ring ring-delay-2"></div>
+
+          <!-- 粒子效果 -->
+          <div class="music-particles">
+            <span
+              v-for="i in 8"
+              :key="`particle-${i}`"
+              class="music-particle"
+              :style="getParticleStyle(i)"
+            ></span>
+          </div>
+
+          <!-- 音波纹波效果 -->
+          <div class="sound-wave">
+            <div
+              class="wave-bar"
+              v-for="i in 5"
+              :key="`wave-${i}`"
+              :style="getWaveBarStyle(i)"
+            ></div>
+          </div>
+        </button>
+      </div>
       <!-- 在线状态指示器 -->
       <div
         class="online-indicator"
@@ -293,6 +383,80 @@ const isMenuOpen = ref(false);
 const isScrolled = ref(false);
 const showDropdown = ref(false);
 const isMobile = ref(false);
+// ==================== BGM音乐播放相关 ====================
+const isMusicPlaying = ref(false);
+
+const audioElement = ref<HTMLAudioElement | null>(null);
+const musicPath = "http://36.150.237.25:3000/music/Daisy Crown (日文版).mp3";
+
+// 初始化音频
+const initAudio = () => {
+  if (typeof Audio === "undefined") return;
+
+  audioElement.value = new Audio(musicPath);
+  audioElement.value.loop = true;
+
+  audioElement.value.preload = "auto";
+
+  // 音频加载错误处理
+  audioElement.value.addEventListener("error", (e) => {
+    console.error("音频加载失败:", e);
+    isMusicPlaying.value = false;
+  });
+
+  // 音频加载成功
+  audioElement.value.addEventListener("canplay", () => {
+    console.log("背景音乐加载成功");
+  });
+};
+
+// 切换音乐播放状态
+const toggleMusic = async () => {
+  if (!audioElement.value) {
+    initAudio();
+  }
+
+  if (!audioElement.value) return;
+
+  try {
+    if (isMusicPlaying.value) {
+      await audioElement.value.pause();
+      isMusicPlaying.value = false;
+    } else {
+      await audioElement.value.play();
+      isMusicPlaying.value = true;
+    }
+  } catch (error) {
+    console.error("播放/暂停音乐时出错:", error);
+    isMusicPlaying.value = false;
+  }
+};
+
+// 生成粒子样式
+const getParticleStyle = (index: number) => {
+  const angle = (index / 8) * Math.PI * 2;
+  const distance = 40 + Math.random() * 20;
+  const delay = index * 0.1;
+  const duration = 2 + Math.random() * 1;
+
+  return {
+    "--particle-angle": `${angle}rad`,
+    "--particle-distance": `${distance}px`,
+    "--particle-delay": `${delay}s`,
+    "--particle-duration": `${duration}s`,
+  } as any;
+};
+
+// 生成音波条样式
+const getWaveBarStyle = (index: number) => {
+  const delay = index * 0.1;
+  const height = 10 + Math.random() * 20;
+
+  return {
+    "--wave-delay": `${delay}s`,
+    "--wave-height": `${height}%`,
+  } as any;
+};
 
 // Socket.IO 连接
 const socket: Socket = io("http://36.150.237.25:3000", {
@@ -314,6 +478,7 @@ const dropdownLinks = [
   { name: "隐海文阁", path: "/wiki" },
   { name: "圣音回廊", path: "/voice" },
   { name: "光噪旋律", path: "/music" },
+  { name: "圣域回音", path: "/thanks" },
 ];
 
 // ==================== 方法 ====================
@@ -395,6 +560,11 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", handleScroll);
   window.removeEventListener("resize", handleResize);
   document.body.style.overflow = "";
+
+  if (audioElement.value) {
+    audioElement.value.pause();
+    audioElement.value = null;
+  }
 });
 
 // 监听移动端状态变化
@@ -576,7 +746,7 @@ $phoebe-white-trans: rgba(250, 252, 253, 0.95);
 .nav-container {
   position: relative;
   z-index: 2;
-  max-width: 1400px;
+  width: 100vw;
   height: 100%;
   margin: 0 auto;
   padding: 0 28px;
@@ -1353,7 +1523,8 @@ $phoebe-white-trans: rgba(250, 252, 253, 0.95);
     right: 0;
     bottom: 0;
     width: 320px;
-    height: 100vh;
+    min-height: 100vh;
+    overflow-y: auto;
     background: linear-gradient(
       180deg,
       rgba($phoebe-blue-dark, 0.98) 0%,
@@ -1681,6 +1852,365 @@ $phoebe-white-trans: rgba(250, 252, 253, 0.95);
 
   .mobile-menu-panel .panel-content {
     width: 280px;
+  }
+} /* ==================== BGM音乐播放器样式 ==================== */
+.music-player-wrapper {
+  position: relative;
+  margin-left: 12px;
+  z-index: 10;
+
+  &:hover {
+    .music-toggle-btn {
+      .music-icon {
+        transform: scale(1.1) rotate(5deg);
+      }
+    }
+  }
+
+  &.music-playing {
+    .music-pulse-ring {
+      opacity: 1;
+      animation-play-state: running;
+    }
+
+    .sound-wave {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .music-particles {
+      opacity: 1;
+
+      .music-particle {
+        animation-play-state: running;
+      }
+    }
+  }
+}
+
+.music-toggle-btn {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba($phoebe-lilac, 0.15) 0%,
+    rgba($phoebe-blue-light, 0.1) 100%
+  );
+  border: 1px solid rgba($phoebe-gold, 0.2);
+  color: $phoebe-white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      rgba($phoebe-lilac, 0.25) 0%,
+      rgba($phoebe-blue-light, 0.2) 100%
+    );
+    border-color: rgba($phoebe-gold, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba($phoebe-lilac, 0.2),
+      0 0 0 1px rgba($phoebe-gold, 0.1), inset 0 1px 0 rgba($phoebe-white, 0.1);
+
+    .music-icon {
+      color: $phoebe-gold;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.music-icon {
+  position: relative;
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  color: $phoebe-white;
+  transition: all 0.3s ease;
+
+  .music-note {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0.9;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    &.note-1 {
+      animation: noteFloat 3s ease-in-out infinite;
+    }
+
+    &.note-2 {
+      opacity: 0.6;
+      transform: scale(0.8) rotate(20deg);
+      animation: noteFloat 3s ease-in-out infinite reverse;
+    }
+  }
+}
+
+.play-pause-indicator {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 2px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+
+  .play-bar {
+    width: 3px;
+    background: $phoebe-gold;
+    border-radius: 2px;
+    transform-origin: bottom;
+
+    &.bar-1 {
+      height: 40%;
+      animation: barPulse 1.2s ease-in-out infinite;
+    }
+
+    &.bar-2 {
+      height: 70%;
+      animation: barPulse 1.2s ease-in-out infinite 0.3s;
+    }
+
+    &.bar-3 {
+      height: 100%;
+      animation: barPulse 1.2s ease-in-out infinite 0.6s;
+    }
+  }
+}
+
+.music-playing .play-pause-indicator {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.music-pulse-ring {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 2px solid rgba($phoebe-lilac, 0.3);
+  opacity: 0;
+  animation: musicRingPulse 2s ease-out infinite;
+  pointer-events: none;
+
+  &.ring-delay-1 {
+    animation-delay: 0.3s;
+  }
+
+  &.ring-delay-2 {
+    animation-delay: 0.6s;
+  }
+}
+
+.music-particles {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+
+  .music-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $phoebe-gold, $phoebe-lilac);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: particleEmit var(--particle-duration) ease-in-out
+      var(--particle-delay) infinite paused;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      background: inherit;
+      filter: blur(3px);
+      opacity: 0.5;
+    }
+  }
+}
+
+.sound-wave {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.5s ease;
+  pointer-events: none;
+
+  .wave-bar {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(to top, transparent, rgba($phoebe-gold, 0.6));
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    border-radius: 1px;
+    opacity: 0;
+    animation: waveRipple 1.5s ease-in-out infinite;
+
+    &:nth-child(1) {
+      transform: translateX(-50%) rotate(0deg);
+      animation-delay: var(--wave-delay);
+      height: var(--wave-height);
+    }
+
+    &:nth-child(2) {
+      transform: translateX(-50%) rotate(72deg);
+      animation-delay: calc(var(--wave-delay) + 0.1s);
+      height: var(--wave-height);
+    }
+
+    &:nth-child(3) {
+      transform: translateX(-50%) rotate(144deg);
+      animation-delay: calc(var(--wave-delay) + 0.2s);
+      height: var(--wave-height);
+    }
+
+    &:nth-child(4) {
+      transform: translateX(-50%) rotate(216deg);
+      animation-delay: calc(var(--wave-delay) + 0.3s);
+      height: var(--wave-height);
+    }
+
+    &:nth-child(5) {
+      transform: translateX(-50%) rotate(288deg);
+      animation-delay: calc(var(--wave-delay) + 0.4s);
+      height: var(--wave-height);
+    }
+  }
+}
+
+/* ==================== 音乐动画关键帧 ==================== */
+@keyframes noteFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(5deg);
+  }
+}
+
+@keyframes barPulse {
+  0%,
+  100% {
+    height: 40%;
+    opacity: 0.7;
+  }
+  50% {
+    height: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes musicRingPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes particleEmit {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateX(0) translateY(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%)
+      translateX(calc(cos(var(--particle-angle)) * var(--particle-distance)))
+      translateY(calc(sin(var(--particle-angle)) * var(--particle-distance)));
+  }
+}
+
+@keyframes waveRipple {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) rotate(var(--rotate)) scaleY(0.2);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(-50%) rotate(var(--rotate)) scaleY(1);
+  }
+}
+
+/* ==================== 响应式调整 ==================== */
+@media (max-width: 992px) {
+  .music-player-wrapper {
+    margin-left: 8px;
+   
+  }
+
+  .music-toggle-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .volume-slider-container {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+
+    &::before {
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%) rotate(45deg);
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .music-player-wrapper {
+    margin-left: 4px;
+  }
+
+  .music-toggle-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .music-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .volume-slider-container {
+    width: 140px;
+    padding: 12px;
   }
 }
 </style>

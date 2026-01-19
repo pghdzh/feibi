@@ -23,3 +23,7 @@ export const likeImage = (id: number): Promise<any> => {
   if (!id) return Promise.reject(new Error("ID 不能为空"));
   return http.post(`/api/like/${id}`);
 };
+
+export const getImagesByIds = (data): Promise<any> => {
+  return http.post("/api/getImagesByIds", data);
+};

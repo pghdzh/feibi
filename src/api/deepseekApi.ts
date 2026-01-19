@@ -89,6 +89,6 @@ export async function sendMessageToHui(
       return await sendMessageToHui(inputMessage, reducedHistory, false);
     }
     console.error("与 DeepSeek API 通信时出错:", error.response?.data || error);
-    return "（出错了，请稍后再试）";
+    return "error";
   }
 }
