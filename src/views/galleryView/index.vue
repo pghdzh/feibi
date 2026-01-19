@@ -31,7 +31,7 @@
             <span class="filter-text">
               {{ showLikedOnly ? "所有图片" : "只看点赞" }}
             </span>
-        
+
             <span class="loading-spinner" v-if="isLoadingLikedImages"></span>
             <div class="filter-glow"></div>
           </button>
@@ -117,7 +117,7 @@
       </div>
 
       <!-- sentinel：用于触发无限滚动 -->
-      <div ref="sentinel" class="sentinel" v-if="!showLikedOnly"></div>
+      <div ref="sentinel" class="sentinel"></div>
 
       <!-- 可选：加载中/结束提示 -->
       <div class="loading" v-if="loading && !showLikedOnly">加载中...</div>
@@ -385,7 +385,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed, nextTick, onBeforeUnmount } from "vue";
+import {
+  ref,
+  onMounted,
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  watch,
+} from "vue";
 import { uploadImages } from "@/api/modules/images"; // 前面封装的上传接口
 import { getRankingList } from "@/api/modules/ranking"; // 根据你的实际路径调整
 import { gsap } from "gsap"; // ← 本地引入
@@ -488,9 +495,26 @@ const toggleLikedFilter = async () => {
   if (showLikedOnly.value) {
     // 切换到显示所有图片
     showLikedOnly.value = false;
+    // 重置分页状态，确保可以重新开始无限滚动
+    pageImage.value = 1;
+    images.value = [];
+    finished.value = false;
+    loading.value = false;
+
+    // 确保观察器重新观察哨兵元素
+    await nextTick();
+    if (sentinel.value && sentinelObserver) {
+      sentinelObserver.unobserve(sentinel.value);
+      sentinelObserver.observe(sentinel.value);
+    }
+
+    // 立即加载第一页
+    loadNextPage();
   } else {
     // 切换到只显示点赞图片
     showLikedOnly.value = true;
+    // 清空筛选结果，重新获取点赞图片
+    likedImages.value = [];
 
     // 先使用已加载的图片显示，然后异步获取完整的点赞图片
     likedImages.value = images.value.filter((img) => img.liked);
@@ -505,12 +529,24 @@ const toggleLikedFilter = async () => {
     showFilterAnimation();
   }
 };
-
 // 清除筛选
 const clearLikedFilter = () => {
   showLikedOnly.value = false;
+  // 重置分页状态
+  pageImage.value = 1;
+  images.value = [];
+  finished.value = false;
+  loading.value = false;
+  
+  // 重新开始无限滚动
+  nextTick(() => {
+    if (sentinel.value && sentinelObserver) {
+      sentinelObserver.unobserve(sentinel.value);
+      sentinelObserver.observe(sentinel.value);
+    }
+    loadNextPage();
+  });
 };
-
 // 显示筛选动画效果
 const showFilterAnimation = () => {
   // 为点赞的图片添加高亮动画
@@ -1015,6 +1051,24 @@ interface Chibi {
 const chibiList = ref<Chibi[]>([]);
 let sentinelObserver: IntersectionObserver;
 // Scroll-triggered lazy animation
+
+watch(showLikedOnly, (newVal) => {
+  if (!newVal && !loading.value && !finished.value) {
+    // 从"只看点赞"切换回"全部图片"时，手动触发一次加载
+    // 同时重置状态以确保可以继续加载
+    nextTick(() => {
+      // 确保观察器重新生效
+      if (sentinel.value && sentinelObserver) {
+        sentinelObserver.unobserve(sentinel.value);
+        sentinelObserver.observe(sentinel.value);
+      }
+      // 如果当前没有图片，立即加载第一页
+      if (images.value.length === 0) {
+        loadNextPage();
+      }
+    });
+  }
+});
 onMounted(async () => {
   // 1. 拉排行榜
   await fetchRanking();

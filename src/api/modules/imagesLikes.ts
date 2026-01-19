@@ -25,5 +25,24 @@ export const likeImage = (id: number): Promise<any> => {
 };
 
 export const getImagesByIds = (data): Promise<any> => {
-  return http.post("/api/getImagesByIds", data);
+  // 确保ids是逗号分隔的字符串
+  let idsStr = '';
+  if (Array.isArray(data.ids)) {
+    idsStr = data.ids.join(',');
+  } else if (data.ids) {
+    // 如果已经是字符串，直接使用
+    idsStr = data.ids;
+  }
+  
+  // 手动构建URL，避免axios参数序列化问题
+  const queryParams = new URLSearchParams();
+  if (idsStr) {
+    queryParams.append('ids', idsStr);
+  }
+  queryParams.append('character_key', data.character_key || 'feibi');
+  
+  const queryString = queryParams.toString();
+  const url = `/api/getImagesByIds${queryString ? '?' + queryString : ''}`;
+  
+  return http.get(url);
 };
